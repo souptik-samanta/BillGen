@@ -1,0 +1,497 @@
+Customer Information
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SILITECH - Bill Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+        </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="robot-emoji">🤖</span>
+            <h1>SILITECH</h1>
+            <p>ROBOTICS & ELECTRONICS DEPARTMENT</p>
+        </div>
+
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="customerName"> Customer Name *</label>
+                    <input type="text" id="customerName" placeholder="Enter customer name" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerPhone"> Phone Number</label>
+                    <input type="tel" id="customerPhone" placeholder="Enter phone number">
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail"> Email Address</label>
+                    <input type="email" id="customerEmail" placeholder="Enter email address">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="customerAddress"> Customer Address</label>
+                <textarea id="customerAddress" rows="3" placeholder="Enter customer address"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="billDate"> Bill Date</label>
+                    <input type="date" id="billDate">
+                </div>
+                <div class="form-group">
+                    <label for="guaranteeDate"> Guarantee Till</label>
+                    <input type="date" id="guaranteeDate">
+                </div>
+                <div class="form-group">
+                    <label for="projectType"> Project Type</label>
+                    <select id="projectType">
+                        <option value="">Select Project Type</option>
+                        <option value="Robotics">Robotics</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="IoT">IoT Solutions</option>
+                        <option value="Automation">Automation</option>
+                        <option value="Custom">Custom Project</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="items-section">
+                <div class="items-header">
+                    <h3>🔧 Items & Services</h3>
+                    <button type="button" class="btn btn-primary" onclick="addItem()">+ Add Item</button>
+                </div>
+                
+                <div id="itemsContainer">
+                    <div class="item-row">
+                        <div>
+                            <label>Item/Service Name *</label>
+                            <input type="text" class="item-name" placeholder="Enter item or service name" required>
+                        </div>
+                        <div>
+                            <label>Cost (Rs) *</label>
+                            <input type="number" class="item-cost" placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+                        <div>
+                            <label>Quantity *</label>
+                            <input type="number" class="item-qty" placeholder="1" min="1" value="1" required>
+                        </div>
+                        <div>
+                            <label>&nbsp;</label>
+                            <button type="button" class="btn btn-danger" onclick="removeItem(this)" style="display: none;">×</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-status">
+                <label><strong>💳 Payment Status:</strong></label>
+                <div class="radio-group">
+                    <input type="radio" id="paid" name="paymentStatus" value="PAID" checked>
+                    <label for="paid">✅ PAID</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" id="unpaid" name="paymentStatus" value="UNPAID">
+                    <label for="unpaid">⏳ UNPAID</label>
+                </div>
+            </div>
+
+            <div class="summary" id="billSummary">
+                <h3>💰 Bill Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">Rs0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>🎯 Grand Total:</span>
+                    <span id="grandTotal">Rs0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn btn-success" onclick="generatePDF()" style="margin-right: 20px;">
+                 Generate PDF Bill
+            </button>
+            <button type="button" class="btn btn-primary" onclick="previewBill()">
+                 Preview Bill
+            </button>
+        </div>
+
+        <div class="love-footer">
+            Made<span class="heart"></span> by SoHq
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="font-size: 1.2em; color: #2c3e50;">Generating your professional bill...</p>
+        </div>
+    </div>
+
+    <script>
+        // Set current date as default
+        document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+        
+        // Set guarantee date to 1 year from now
+        const guaranteeDate = new Date();
+        guaranteeDate.setFullYear(guaranteeDate.getFullYear() + 1);
+        document.getElementById('guaranteeDate').value = guaranteeDate.toISOString().split('T')[0];
+
+        let itemCount = 1;
+
+        function addItem() {
+            console.log('Adding new item...');
+            itemCount++;
+            const container = document.getElementById('itemsContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'item-row';
+            newItem.innerHTML = `
+                <div>
+                    <label>Item/Service Name *</label>
+                    <input type="text" class="item-name" placeholder="Enter item or service name" required>
+                </div>
+                <div>
+                    <label>Cost (Rs) *</label>
+                    <input type="number" class="item-cost" placeholder="0.00" min="0" step="0.01" required>
+                </div>
+                <div>
+                    <label>Quantity *</label>
+                    <input type="number" class="item-qty" placeholder="1" min="1" value="1" required>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button type="button" class="btn btn-danger" onclick="removeItem(this)">×</button>
+                </div>
+            `;
+            container.appendChild(newItem);
+            updateRemoveButtons();
+            attachCalculationListeners(newItem);
+            console.log('Item added successfully. Total items:', itemCount);
+        }
+
+        function removeItem(button) {
+            if (itemCount > 1) {
+                button.closest('.item-row').remove();
+                itemCount--;
+                updateRemoveButtons();
+                calculateTotals();
+            }
+        }
+
+        function updateRemoveButtons() {
+            const removeButtons = document.querySelectorAll('.btn-danger');
+            removeButtons.forEach((btn, index) => {
+                btn.style.display = itemCount > 1 ? 'block' : 'none';
+            });
+        }
+
+        function attachCalculationListeners(container = document) {
+            const inputs = container.querySelectorAll('.item-cost, .item-qty');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateTotals);
+            });
+        }
+
+        function calculateTotals() {
+            let total = 0;
+
+            const itemRows = document.querySelectorAll('.item-row');
+            itemRows.forEach(row => {
+                const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
+                const qty = parseInt(row.querySelector('.item-qty').value) || 0;
+                const itemTotal = cost * qty;
+                total += itemTotal;
+            });
+
+            document.getElementById('subtotal').textContent = `Rs${total.toFixed(2)}`;
+            document.getElementById('grandTotal').textContent = `Rs${total.toFixed(2)}`;
+        }
+
+        function validateForm() {
+            const customerName = document.getElementById('customerName').value.trim();
+            if (!customerName) {
+                alert('Please enter customer name');
+                return false;
+            }
+
+            const itemRows = document.querySelectorAll('.item-row');
+            for (let row of itemRows) {
+                const name = row.querySelector('.item-name').value.trim();
+                const cost = row.querySelector('.item-cost').value;
+                const qty = row.querySelector('.item-qty').value;
+                
+                if (!name || !cost || !qty) {
+                    alert('Please fill in all required item fields');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function getFormData() {
+            const items = [];
+            const itemRows = document.querySelectorAll('.item-row');
+            
+            itemRows.forEach(row => {
+                const name = row.querySelector('.item-name').value.trim();
+                const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
+                const qty = parseInt(row.querySelector('.item-qty').value) || 1;
+                
+                if (name && cost > 0) {
+                    const itemTotal = cost * qty;
+                    
+                    items.push({
+                        name,
+                        cost,
+                        qty,
+                        itemTotal
+                    });
+                }
+            });
+
+            const grandTotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
+
+            return {
+                customerName: document.getElementById('customerName').value.trim(),
+                customerPhone: document.getElementById('customerPhone').value.trim(),
+                customerEmail: document.getElementById('customerEmail').value.trim(),
+                customerAddress: document.getElementById('customerAddress').value.trim(),
+                billDate: document.getElementById('billDate').value,
+                guaranteeDate: document.getElementById('guaranteeDate').value,
+                projectType: document.getElementById('projectType').value,
+                paymentStatus: document.querySelector('input[name="paymentStatus"]:checked').value,
+                items,
+                grandTotal
+            };
+        }
+
+        function generatePDF() {
+            if (!validateForm()) return;
+
+            document.getElementById('loading').style.display = 'block';
+            
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const data = getFormData();
+
+                // Colors
+                const primaryColor = [102, 126, 234];
+                const accentColor = [78, 205, 196];
+                const darkGray = [44, 62, 80];
+                const lightGray = [248, 249, 250];
+
+                // Header Background
+                doc.setFillColor(102, 126, 234);
+                doc.rect(0, 0, 210, 50, 'F');
+                
+                // Robot emoji and title
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(28);
+                doc.setFont('Roboto', 'bold');
+                doc.text('SILITECH', 105, 25, { align: 'center' });
+                
+                doc.setFontSize(14);
+                doc.setFont('Roboto', 'normal');
+                doc.text('ROBOTICS & ELECTRONICS DEPARTMENT', 105, 35, { align: 'center' });
+                doc.text('Email: silitechservices@gmail.com | Phone: +91-XXXX-XXXX', 105, 43, { align: 'center' });
+
+                // Invoice header
+                doc.setTextColor(...darkGray);
+                doc.setFontSize(20);
+                doc.setFont('Roboto', 'bold');
+                doc.text('INVOICE', 20, 70);
+                
+                doc.setFontSize(11);
+                doc.setFont('Roboto', 'normal');
+                doc.text(`Bill Date: ${new Date(data.billDate).toLocaleDateString('en-IN')}`, 20, 82);
+                doc.text(`Bill No: ST-${Date.now().toString().slice(-6)}`, 20, 92);
+                
+                if (data.guaranteeDate) {
+                    doc.text(`Guarantee Till: ${new Date(data.guaranteeDate).toLocaleDateString('en-IN')}`, 20, 102);
+                }
+
+                if (data.projectType) {
+                    doc.text(`Project Type: ${data.projectType}`, 20, 112);
+                }
+
+                // Payment Status Stamp
+                const stampX = 145;
+                const stampY = 65;
+                if (data.paymentStatus === 'PAID') {
+                    doc.setDrawColor(76, 175, 80);
+                    doc.setTextColor(76, 175, 80);
+                } else {
+                    doc.setDrawColor(244, 67, 54);
+                    doc.setTextColor(244, 67, 54);
+                }
+                doc.setLineWidth(3);
+                doc.rect(stampX, stampY, 45, 18);
+                doc.setFontSize(16);
+                doc.setFont('Roboto', 'bold');
+                doc.text(data.paymentStatus, stampX + 22.5, stampY + 12, { align: 'center' });
+
+                // Customer Information Box
+                doc.setFillColor(...lightGray);
+                doc.rect(20, 125, 170, 45, 'F');
+                doc.setDrawColor(...primaryColor);
+                doc.setLineWidth(1);
+                doc.rect(20, 125, 170, 45);
+
+                doc.setTextColor(...darkGray);
+                doc.setFontSize(14);
+                doc.setFont('Roboto', 'bold');
+                doc.text('BILL TO:', 25, 138);
+                
+                doc.setFontSize(12);
+                doc.setFont('Roboto', 'normal');
+                doc.text(data.customerName, 25, 150);
+                if (data.customerPhone) {
+                    doc.text(` ${data.customerPhone}`, 25, 160);
+                }
+                if (data.customerEmail) {
+                    doc.text(` ${data.customerEmail}`, 100, 160);
+                }
+                if (data.customerAddress) {
+                    const addressLines = doc.splitTextToSize(data.customerAddress, 80);
+                    doc.text(addressLines, 25, 168);
+                }
+
+                // Items Table
+                let yPos = 190;
+                
+                // Table Header
+                doc.setFillColor(...primaryColor);
+                doc.rect(20, yPos - 10, 170, 15, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(11);
+                doc.setFont('Roboto', 'bold');
+                doc.text('ITEM/SERVICE', 25, yPos);
+                doc.text('RATE (Rs)', 110, yPos);
+                doc.text('QTY', 140, yPos);
+                doc.text('TOTAL (Rs)', 165, yPos);
+
+                yPos += 20;
+
+                // Items
+                doc.setTextColor(...darkGray);
+                doc.setFont('Roboto', 'normal');
+                
+                data.items.forEach((item, index) => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+                    
+                    // Alternate row colors
+                    if (index % 2 === 0) {
+                        doc.setFillColor(248, 249, 250);
+                        doc.rect(20, yPos - 8, 170, 12, 'F');
+                    }
+                    
+                    doc.text(item.name.substring(0, 25), 25, yPos);
+                    doc.text(`Rs${item.cost.toFixed(2)}`, 110, yPos);
+                    doc.text(item.qty.toString(), 140, yPos);
+                    doc.text(`Rs${item.itemTotal.toFixed(2)}`, 165, yPos);
+                    
+                    yPos += 12;
+                });
+
+                // Total Section
+                yPos += 25;
+                doc.setFillColor(...accentColor);
+                doc.rect(120, yPos - 8, 70, 15, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14);
+                doc.setFont('Roboto', 'bold');
+                doc.text('GRAND TOTAL:', 125, yPos);
+                doc.text(`Rs${data.grandTotal.toFixed(2)}`, 165, yPos);
+
+                // Footer
+                const footerY = 270;
+                doc.setTextColor(...darkGray);
+                doc.setFontSize(10);
+                doc.setFont('Roboto', 'italic');
+                doc.text('Thank you for choosing SILITECH!', 105, footerY, { align: 'center' });
+                doc.text('Made by SoHq', 105, footerY + 10, { align: 'center' });
+                doc.text('For support: silitechservices@gmail.com', 105, footerY + 20, { align: 'center' });
+
+                // Save PDF
+                const fileName = `SILITECH_Bill_${data.customerName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+                doc.save(fileName);
+                
+                document.getElementById('loading').style.display = 'none';
+            }, 1500);
+        }
+
+        function previewBill() {
+            if (!validateForm()) return;
+            
+            const data = getFormData();
+            let previewContent = `
+                <div style="text-align: center; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 30px;">
+                    <h1 style="font-size: 2.5em;">🤖 SILITECH</h1>
+                    <h2>ROBOTICS & ELECTRONICS DEPARTMENT</h2>
+                </div>
+                <div style="padding: 20px;">
+                    <h3>Customer Information</h3>
+                    <p><strong>Name:</strong> ${data.customerName}</p>
+                    <p><strong>Phone:</strong> ${data.customerPhone || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${data.customerEmail || 'N/A'}</p>
+                    <p><strong>Date:</strong> ${new Date(data.billDate).toLocaleDateString('en-IN')}</p>
+                <p><strong>Status:</strong> ${data.paymentStatus}</p>
+                <hr>
+                <h3>Items:</h3>
+            `;
+            
+            data.items.forEach((item, index) => {
+                previewContent += `
+                    <p>${index + 1}. ${item.name} - Rs${item.cost} × ${item.qty} (GST: ${item.gstRate}%) = Rs${item.finalAmount.toFixed(2)}</p>
+                `;
+            });
+            
+            previewContent += `
+                <hr>
+                <p><strong>Subtotal: Rs${data.subtotal.toFixed(2)}</strong></p>
+                <p><strong>Total GST: Rs${data.totalGst.toFixed(2)}</strong></p>
+                <p><strong>Grand Total: Rs${data.grandTotal.toFixed(2)}</strong></p>
+            `;
+            
+            const previewWindow = window.open('', 'Preview', 'width=600,height=800');
+            previewWindow.document.write(`
+                <html>
+                    <head><title>Bill Preview</title></head>
+                    <body style="font-family: Arial, sans-serif; padding: 20px;">
+                        ${previewContent}
+                    </body>
+                </html>
+            `);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            attachCalculationListeners();
+            calculateTotals();
+            updateRemoveButtons();
+            
+            // Add click handler for the add item button
+            const addButton = document.querySelector('.items-header .btn-primary');
+            if (addButton) {
+                addButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Add button clicked');
+                    addItem();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
