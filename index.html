@@ -138,9 +138,9 @@ Customer Information
         // Set current date as default
         document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
         
-        // Set guarantee date to 1 year from now
+        // Set guarantee date to 1 month from now
         const guaranteeDate = new Date();
-        guaranteeDate.setFullYear(guaranteeDate.getFullYear() + 1);
+        guaranteeDate.setMonth(guaranteeDate.getMonth() + 1);
         document.getElementById('guaranteeDate').value = guaranteeDate.toISOString().split('T')[0];
 
         let itemCount = 1;
