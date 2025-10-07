@@ -1,166 +1,387 @@
-Customer Information
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Generator by Souptik</title>
+    <title>Multi-Theme Bill & Card Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-        </style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&display=swap');
+    </style>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <span class="robot-emoji">🤖</span>
-            <h1>SILITECH</h1>
-            <p>ROBOTICS & ELECTRONICS DEPARTMENT</p>
-        </div>
-
-        <div class="form-section">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="customerName"> Customer Name *</label>
-                    <input type="text" id="customerName" placeholder="Enter customer name" required>
-                </div>
-                <div class="form-group">
-                    <label for="customerPhone"> Phone Number</label>
-                    <input type="tel" id="customerPhone" placeholder="Enter phone number">
-                </div>
-                <div class="form-group">
-                    <label for="customerEmail"> Email Address</label>
-                    <input type="email" id="customerEmail" placeholder="Enter email address">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="customerAddress"> Customer Address</label>
-                <textarea id="customerAddress" rows="3" placeholder="Enter customer address"></textarea>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="billDate"> Bill Date</label>
-                    <input type="date" id="billDate">
-                </div>
-                <div class="form-group">
-                    <label for="guaranteeDate"> Guarantee Till</label>
-                    <input type="date" id="guaranteeDate">
-                </div>
-                <div class="form-group">
-                    <label for="projectType"> Project Type</label>
-                    <select id="projectType">
-                        <option value="">Select Project Type</option>
-                        <option value="Robotics">Robotics</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="IoT">IoT Solutions</option>
-                        <option value="Automation">Automation</option>
-                        <option value="Custom">Custom Project</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="items-section">
-                <div class="items-header">
-                    <h3>🔧 Items & Services</h3>
-                    <button type="button" class="btn btn-primary" onclick="addItem()">+ Add Item</button>
+    <!-- Theme Selection Modal -->
+    <div id="themeModal" class="modal">
+        <div class="modal-content">
+            <h2>🎨 Choose Your Theme</h2>
+            <div class="theme-grid">
+                <div class="theme-card" onclick="selectTheme('silitech')">
+                    <div class="theme-preview silitech-preview">
+                        <span class="theme-emoji">🤖</span>
+                        <h3>SILITECH</h3>
+                        <p>Robotics & Electronics</p>
+                    </div>
+                    <button class="theme-btn">Select SILITECH</button>
                 </div>
                 
-                <div id="itemsContainer">
-                    <div class="item-row">
-                        <div>
-                            <label>Item/Service Name *</label>
-                            <input type="text" class="item-name" placeholder="Enter item or service name" required>
-                        </div>
-                        <div>
-                            <label>Cost (Rs) *</label>
-                            <input type="number" class="item-cost" placeholder="0.00" min="0" step="0.01" required>
-                        </div>
-                        <div>
-                            <label>Quantity *</label>
-                            <input type="number" class="item-qty" placeholder="1" min="1" value="1" required>
-                        </div>
-                        <div>
-                            <label>&nbsp;</label>
-                            <button type="button" class="btn btn-danger" onclick="removeItem(this)" style="display: none;">×</button>
-                        </div>
+                <div class="theme-card" onclick="selectTheme('witchcraft')">
+                    <div class="theme-preview witchcraft-preview">
+                        <span class="theme-emoji">🔮</span>
+                        <h3>WITCHCRAFT</h3>
+                        <p>Vision Meeting Perfection</p>
                     </div>
+                    <button class="theme-btn">Select WITCHCRAFT</button>
                 </div>
-            </div>
-
-            <div class="payment-status">
-                <label><strong>💳 Payment Status:</strong></label>
-                <div class="radio-group">
-                    <input type="radio" id="paid" name="paymentStatus" value="PAID" checked>
-                    <label for="paid">✅ PAID</label>
+                
+                <div class="theme-card" onclick="selectTheme('waterny')">
+                    <div class="theme-preview waterny-preview">
+                        <span class="theme-emoji">💧</span>
+                        <h3>WATERNY CARDS</h3>
+                        <p>Digital Business Cards</p>
+                    </div>
+                    <button class="theme-btn">Select WATERNY</button>
                 </div>
-                <div class="radio-group">
-                    <input type="radio" id="unpaid" name="paymentStatus" value="UNPAID">
-                    <label for="unpaid">⏳ UNPAID</label>
-                </div>
-            </div>
-
-            <div class="summary" id="billSummary">
-                <h3>💰 Bill Summary</h3>
-                <div class="summary-row">
-                    <span>Subtotal:</span>
-                    <span id="subtotal">Rs0.00</span>
-                </div>
-                <div class="summary-row total">
-                    <span>🎯 Grand Total:</span>
-                    <span id="grandTotal">Rs0.00</span>
-                </div>
-            </div>
-            <div style="text-align: center; color: red;">
-                <h2>I <strong> <bold>NO WAY CLAIM<bold></strong> ANY DAMAGES CREATED BY THIS BILL GENERATOR</h2>
-                <h2>THIS IS JUST A BILL GENERATOR</h2>
-                <h2>THIS IS NOT A REAL BILL GENERATOR</h2>
-                <h2>THIS IS JUST FOR THE OSSW COMMUNITY</h2>
             </div>
         </div>
+    </div>
 
-        <div class="actions">
-            <button type="button" class="btn btn-success" onclick="generatePDF()" style="margin-right: 20px;">
-                 Generate PDF Bill
-            </button>
-            <button type="button" class="btn btn-primary" onclick="previewBill()">
-                 Preview Bill
-            </button>
+    <!-- Main Container -->
+    <div class="container" id="mainContainer" style="display: none;">
+        <!-- Dynamic Header will be inserted here -->
+        <div class="header" id="dynamicHeader"></div>
+
+        <!-- Theme Switcher Button -->
+        <div class="theme-switcher">
+            <button class="btn btn-theme" onclick="showThemeModal()">🎨 Switch Theme</button>
+        </div>
+
+        <!-- Dynamic Form Section -->
+        <div class="form-section" id="dynamicForm">
+            <!-- Form content will be dynamically generated based on selected theme -->
+        </div>
+
+        <!-- Dynamic Actions Section -->
+        <div class="actions" id="dynamicActions">
+            <!-- Actions will be dynamically generated based on selected theme -->
         </div>
 
         <div class="love-footer">
-            Made<span class="heart"></span> by Souptik
+            Made with <span class="heart">❤️</span> by Souptik Samanta | Multi-Theme Generator
+            <br>
+            <small style="opacity: 0.8;">Website: soup-codes.site - Professional Bill & Card Generator</small>
         </div>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="font-size: 1.2em; color: #2c3e50;">Generating your professional bill...</p>
+            <p id="loadingText">Generating your document...</p>
         </div>
     </div>
 
     <script>
-        // Set current date as default
-        document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
-        
-        // Set guarantee date to 1 month from now
-        const guaranteeDate = new Date();
-        guaranteeDate.setMonth(guaranteeDate.getMonth() + 1);
-        document.getElementById('guaranteeDate').value = guaranteeDate.toISOString().split('T')[0];
-
+        let currentTheme = 'silitech';
         let itemCount = 1;
 
+        // Theme configurations
+        const themes = {
+            silitech: {
+                name: 'SILITECH',
+                tagline: 'ROBOTICS & ELECTRONICS DEPARTMENT',
+                emoji: '🤖',
+                contact: 'silitechservices@gmail.com | WP: +91 7439442752',
+                colors: {
+                    primary: '#667eea',
+                    secondary: '#764ba2',
+                    accent: '#4ECDC4'
+                },
+                projectTypes: ['Robotics', 'Electronics', 'IoT Solutions', 'Automation', 'Custom Project']
+            },
+            witchcraft: {
+                name: 'WITCHCRAFT',
+                tagline: 'Vision Meeting Perfection',
+                emoji: '🔮',
+                contact: 'mysticalservices@witchcraft.com | Crystal Ball: +91 9876543210',
+                colors: {
+                    primary: '#2d1b69',
+                    secondary: '#8b5cf6',
+                    accent: '#c084fc'
+                },
+                projectTypes: ['Mystical Readings', 'Crystal Healing', 'Tarot Sessions', 'Spell Casting', 'Enchantments']
+            },
+            waterny: {
+                name: 'WATERNY CARDS',
+                tagline: 'Professional Digital Business Cards',
+                emoji: '💧',
+                contact: 'hello@waterny.com | Phone: +91 8888888888',
+                colors: {
+                    primary: '#0ea5e9',
+                    secondary: '#0284c7',
+                    accent: '#38bdf8'
+                }
+            }
+        };
+
+        // Show theme selection modal on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showThemeModal();
+        });
+
+        function showThemeModal() {
+            document.getElementById('themeModal').style.display = 'flex';
+            document.getElementById('mainContainer').style.display = 'none';
+        }
+
+        function selectTheme(theme) {
+            currentTheme = theme;
+            document.getElementById('themeModal').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            
+            if (theme === 'waterny') {
+                generateWaternyCardForm();
+            } else {
+                generateBillForm();
+            }
+            generateHeader();
+            generateActions();
+        }
+
+        function generateHeader() {
+            const theme = themes[currentTheme];
+            const headerElement = document.getElementById('dynamicHeader');
+            
+            if (currentTheme === 'witchcraft') {
+                headerElement.className = 'header witchcraft-header';
+                headerElement.innerHTML = `
+                    <div class="mystical-bg"></div>
+                    <span class="theme-emoji">${theme.emoji}</span>
+                    <h1>${theme.name}</h1>
+                    <p>${theme.tagline}</p>
+                    <div class="mystical-symbols">✨ 🌙 ⭐ 🔮 ✨</div>
+                `;
+            } else if (currentTheme === 'waterny') {
+                headerElement.className = 'header waterny-header';
+                headerElement.innerHTML = `
+                    <div class="water-bg"></div>
+                    <span class="theme-emoji">${theme.emoji}</span>
+                    <h1>${theme.name}</h1>
+                    <p>${theme.tagline}</p>
+                    <div class="water-drops">💧 💎 💧 🌊 💧</div>
+                `;
+            } else {
+                headerElement.className = 'header silitech-header';
+                headerElement.innerHTML = `
+                    <span class="theme-emoji">${theme.emoji}</span>
+                    <h1>${theme.name}</h1>
+                    <p>${theme.tagline}</p>
+                `;
+            }
+        }
+
+        function generateBillForm() {
+            const theme = themes[currentTheme];
+            const formElement = document.getElementById('dynamicForm');
+            
+            const projectOptions = theme.projectTypes.map(type => 
+                `<option value="${type}">${type}</option>`
+            ).join('');
+            
+            formElement.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerName">${currentTheme === 'witchcraft' ? '🔮 Client Name *' : '👤 Customer Name *'}</label>
+                        <input type="text" id="customerName" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical client name' : 'Enter customer name'}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">${currentTheme === 'witchcraft' ? '📞 Crystal Communication' : '📱 Phone Number'}</label>
+                        <input type="tel" id="customerPhone" placeholder="${currentTheme === 'witchcraft' ? 'Enter sacred number' : 'Enter phone number'}">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">${currentTheme === 'witchcraft' ? '✉️ Mystical Messages' : '📧 Email Address'}</label>
+                        <input type="email" id="customerEmail" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical email' : 'Enter email address'}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerAddress">${currentTheme === 'witchcraft' ? '🏠 Mystical Dwelling' : '🏠 Customer Address'}</label>
+                    <textarea id="customerAddress" rows="3" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical address' : 'Enter customer address'}"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="billDate">${currentTheme === 'witchcraft' ? '🌙 Ritual Date' : '📅 Bill Date'}</label>
+                        <input type="date" id="billDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="guaranteeDate">${currentTheme === 'witchcraft' ? '⭐ Magic Warranty Till' : '🛡️ Guarantee Till'}</label>
+                        <input type="date" id="guaranteeDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectType">${currentTheme === 'witchcraft' ? '🔮 Service Type' : '⚡ Project Type'}</label>
+                        <select id="projectType">
+                            <option value="">Select Service Type</option>
+                            ${projectOptions}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="items-section ${currentTheme}-items">
+                    <div class="items-header">
+                        <h3>${currentTheme === 'witchcraft' ? '🔮 Mystical Services' : '🔧 Items & Services'}</h3>
+                        <button type="button" class="btn btn-primary" onclick="addItem()">+ Add Item</button>
+                    </div>
+                    
+                    <div id="itemsContainer">
+                        <div class="item-row">
+                            <div>
+                                <label>${currentTheme === 'witchcraft' ? 'Mystical Service/Item *' : 'Item/Service Name *'}</label>
+                                <input type="text" class="item-name" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical service' : 'Enter item or service name'}" required>
+                            </div>
+                            <div>
+                                <label>Cost (Rs) *</label>
+                                <input type="number" class="item-cost" placeholder="0.00" min="0" step="0.01" required>
+                            </div>
+                            <div>
+                                <label>Quantity *</label>
+                                <input type="number" class="item-qty" placeholder="1" min="1" value="1" required>
+                            </div>
+                            <div>
+                                <label>&nbsp;</label>
+                                <button type="button" class="btn btn-danger" onclick="removeItem(this)" style="display: none;">×</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-status ${currentTheme}-payment">
+                    <label><strong>${currentTheme === 'witchcraft' ? '💰 Mystical Exchange:' : '💳 Payment Status:'}</strong></label>
+                    <div class="radio-group">
+                        <input type="radio" id="paid" name="paymentStatus" value="PAID" checked>
+                        <label for="paid">${currentTheme === 'witchcraft' ? '✨ Blessed (PAID)' : '✅ PAID'}</label>
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" id="unpaid" name="paymentStatus" value="UNPAID">
+                        <label for="unpaid">${currentTheme === 'witchcraft' ? '🌙 Awaiting Energy (UNPAID)' : '⏳ UNPAID'}</label>
+                    </div>
+                </div>
+
+                <div class="summary ${currentTheme}-summary" id="billSummary">
+                    <h3>${currentTheme === 'witchcraft' ? '🔮 Mystical Total' : '💰 Bill Summary'}</h3>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">Rs 0.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>${currentTheme === 'witchcraft' ? '✨ Grand Mystical Total:' : '🎯 Grand Total:'}</span>
+                        <span id="grandTotal">Rs 0.00</span>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <p>⚠️ This is a demo bill generator for educational purposes. Not for commercial use.</p>
+                </div>
+            `;
+            
+            initializeDates();
+            attachCalculationListeners();
+        }
+
+        function generateWaternyCardForm() {
+            const formElement = document.getElementById('dynamicForm');
+            
+            formElement.innerHTML = `
+                <div class="card-preview" id="cardPreview">
+                    <div class="business-card waterny-card">
+                        <div class="card-front">
+                            <div class="card-header">
+                                <h2 id="previewName">Your Name</h2>
+                                <p id="previewTitle">Your Title</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="contact-info">
+                                    <p><span class="icon">📧</span> <span id="previewEmail">your@email.com</span></p>
+                                    <p><span class="icon">📱</span> <span id="previewPhone">+91 9999999999</span></p>
+                                    <p><span class="icon">🌐</span> <span id="previewWebsite">www.yourwebsite.com</span></p>
+                                    <p><span class="icon">📍</span> <span id="previewLocation">Your Location</span></p>
+                                </div>
+                            </div>
+                            <div class="waterny-logo">💧 WATERNY</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cardName">👤 Full Name *</label>
+                            <input type="text" id="cardName" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardTitle">💼 Job Title *</label>
+                            <input type="text" id="cardTitle" placeholder="Enter your job title" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cardEmail">📧 Email Address *</label>
+                            <input type="email" id="cardEmail" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardPhone">📱 Phone Number *</label>
+                            <input type="tel" id="cardPhone" placeholder="Enter your phone number" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cardWebsite">🌐 Website/LinkedIn</label>
+                            <input type="url" id="cardWebsite" placeholder="Enter your website or LinkedIn">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardLocation">📍 Location</label>
+                            <input type="text" id="cardLocation" placeholder="Enter your location">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cardCompany">🏢 Company/Organization</label>
+                        <input type="text" id="cardCompany" placeholder="Enter company name">
+                    </div>
+
+                    <div class="card-themes">
+                        <label><strong>🎨 Card Theme:</strong></label>
+                        <div class="theme-selector">
+                            <input type="radio" id="blueTheme" name="cardTheme" value="blue" checked>
+                            <label for="blueTheme" class="theme-option blue-theme">Ocean Blue</label>
+                            
+                            <input type="radio" id="greenTheme" name="cardTheme" value="green">
+                            <label for="greenTheme" class="theme-option green-theme">Nature Green</label>
+                            
+                            <input type="radio" id="purpleTheme" name="cardTheme" value="purple">
+                            <label for="purpleTheme" class="theme-option purple-theme">Royal Purple</label>
+                            
+                            <input type="radio" id="gradientTheme" name="cardTheme" value="gradient">
+                            <label for="gradientTheme" class="theme-option gradient-theme">Sunset Gradient</label>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            attachCardListeners();
+        }
+
         function addItem() {
-            console.log('Adding new item...');
             itemCount++;
             const container = document.getElementById('itemsContainer');
             const newItem = document.createElement('div');
             newItem.className = 'item-row';
+            
+            const theme = themes[currentTheme];
             newItem.innerHTML = `
                 <div>
-                    <label>Item/Service Name *</label>
-                    <input type="text" class="item-name" placeholder="Enter item or service name" required>
+                    <label>${currentTheme === 'witchcraft' ? 'Mystical Service/Item *' : 'Item/Service Name *'}</label>
+                    <input type="text" class="item-name" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical service' : 'Enter item or service name'}" required>
                 </div>
                 <div>
                     <label>Cost (Rs) *</label>
@@ -178,7 +399,82 @@ Customer Information
             container.appendChild(newItem);
             updateRemoveButtons();
             attachCalculationListeners(newItem);
-            console.log('Item added successfully. Total items:', itemCount);
+        }
+
+        function generateActions() {
+            const actionsElement = document.getElementById('dynamicActions');
+            
+            if (currentTheme === 'waterny') {
+                actionsElement.innerHTML = `
+                    <button type="button" class="btn btn-success" onclick="generateBusinessCard()" style="margin-right: 20px;">
+                        💳 Generate Business Card
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="downloadCardAsPNG()">
+                        📱 Download as PNG
+                    </button>
+                `;
+            } else {
+                actionsElement.innerHTML = `
+                    <button type="button" class="btn btn-success" onclick="generatePDF()" style="margin-right: 20px;">
+                        📄 Generate PDF ${currentTheme === 'witchcraft' ? 'Grimoire' : 'Bill'}
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="previewBill()">
+                        👁️ Preview ${currentTheme === 'witchcraft' ? 'Mystical Bill' : 'Bill'}
+                    </button>
+                `;
+            }
+        }
+
+        function initializeDates() {
+            const billDate = document.getElementById('billDate');
+            const guaranteeDate = document.getElementById('guaranteeDate');
+            
+            if (billDate) {
+                billDate.value = new Date().toISOString().split('T')[0];
+            }
+            
+            if (guaranteeDate) {
+                const future = new Date();
+                future.setMonth(future.getMonth() + 1);
+                guaranteeDate.value = future.toISOString().split('T')[0];
+            }
+        }
+
+        function attachCardListeners() {
+            const inputs = ['cardName', 'cardTitle', 'cardEmail', 'cardPhone', 'cardWebsite', 'cardLocation'];
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updateCardPreview);
+                }
+            });
+            
+            const themeInputs = document.querySelectorAll('input[name="cardTheme"]');
+            themeInputs.forEach(input => {
+                input.addEventListener('change', updateCardTheme);
+            });
+        }
+
+        function updateCardPreview() {
+            const name = document.getElementById('cardName')?.value || 'Your Name';
+            const title = document.getElementById('cardTitle')?.value || 'Your Title';
+            const email = document.getElementById('cardEmail')?.value || 'your@email.com';
+            const phone = document.getElementById('cardPhone')?.value || '+91 9999999999';
+            const website = document.getElementById('cardWebsite')?.value || 'www.yourwebsite.com';
+            const location = document.getElementById('cardLocation')?.value || 'Your Location';
+
+            document.getElementById('previewName').textContent = name;
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewEmail').textContent = email;
+            document.getElementById('previewPhone').textContent = phone;
+            document.getElementById('previewWebsite').textContent = website;
+            document.getElementById('previewLocation').textContent = location;
+        }
+
+        function updateCardTheme() {
+            const selectedTheme = document.querySelector('input[name="cardTheme"]:checked').value;
+            const card = document.querySelector('.waterny-card');
+            card.className = `business-card waterny-card ${selectedTheme}-card`;
         }
 
         function removeItem(button) {
@@ -205,32 +501,50 @@ Customer Information
         }
 
         function calculateTotals() {
+            if (currentTheme === 'waterny') return;
+            
             let total = 0;
-
             const itemRows = document.querySelectorAll('.item-row');
+            
             itemRows.forEach(row => {
-                const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
-                const qty = parseInt(row.querySelector('.item-qty').value) || 0;
+                const cost = parseFloat(row.querySelector('.item-cost')?.value) || 0;
+                const qty = parseInt(row.querySelector('.item-qty')?.value) || 0;
                 const itemTotal = cost * qty;
                 total += itemTotal;
             });
 
-            document.getElementById('subtotal').textContent = `Rs ${total.toFixed(2)}`;
-            document.getElementById('grandTotal').textContent = `Rs ${total.toFixed(2)}`;
+            const subtotalElement = document.getElementById('subtotal');
+            const grandTotalElement = document.getElementById('grandTotal');
+            
+            if (subtotalElement) subtotalElement.textContent = `Rs ${total.toFixed(2)}`;
+            if (grandTotalElement) grandTotalElement.textContent = `Rs ${total.toFixed(2)}`;
         }
 
         function validateForm() {
-            const customerName = document.getElementById('customerName').value.trim();
+            if (currentTheme === 'waterny') {
+                const name = document.getElementById('cardName')?.value.trim();
+                const title = document.getElementById('cardTitle')?.value.trim();
+                const email = document.getElementById('cardEmail')?.value.trim();
+                const phone = document.getElementById('cardPhone')?.value.trim();
+                
+                if (!name || !title || !email || !phone) {
+                    alert('Please fill in all required fields (Name, Title, Email, Phone)');
+                    return false;
+                }
+                return true;
+            }
+            
+            const customerName = document.getElementById('customerName')?.value.trim();
             if (!customerName) {
-                alert('Please enter customer name');
+                alert(currentTheme === 'witchcraft' ? 'Please enter the mystical client name' : 'Please enter customer name');
                 return false;
             }
 
             const itemRows = document.querySelectorAll('.item-row');
             for (let row of itemRows) {
-                const name = row.querySelector('.item-name').value.trim();
-                const cost = row.querySelector('.item-cost').value;
-                const qty = row.querySelector('.item-qty').value;
+                const name = row.querySelector('.item-name')?.value.trim();
+                const cost = row.querySelector('.item-cost')?.value;
+                const qty = row.querySelector('.item-qty')?.value;
                 
                 if (!name || !cost || !qty) {
                     alert('Please fill in all required item fields');
@@ -241,37 +555,44 @@ Customer Information
         }
 
         function getFormData() {
+            if (currentTheme === 'waterny') {
+                return {
+                    name: document.getElementById('cardName')?.value.trim(),
+                    title: document.getElementById('cardTitle')?.value.trim(),
+                    email: document.getElementById('cardEmail')?.value.trim(),
+                    phone: document.getElementById('cardPhone')?.value.trim(),
+                    website: document.getElementById('cardWebsite')?.value.trim(),
+                    location: document.getElementById('cardLocation')?.value.trim(),
+                    company: document.getElementById('cardCompany')?.value.trim(),
+                    theme: document.querySelector('input[name="cardTheme"]:checked')?.value || 'blue'
+                };
+            }
+            
             const items = [];
             const itemRows = document.querySelectorAll('.item-row');
             
             itemRows.forEach(row => {
-                const name = row.querySelector('.item-name').value.trim();
-                const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
-                const qty = parseInt(row.querySelector('.item-qty').value) || 1;
+                const name = row.querySelector('.item-name')?.value.trim();
+                const cost = parseFloat(row.querySelector('.item-cost')?.value) || 0;
+                const qty = parseInt(row.querySelector('.item-qty')?.value) || 1;
                 
                 if (name && cost > 0) {
                     const itemTotal = cost * qty;
-                    
-                    items.push({
-                        name,
-                        cost,
-                        qty,
-                        itemTotal
-                    });
+                    items.push({ name, cost, qty, itemTotal });
                 }
             });
 
             const grandTotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
 
             return {
-                customerName: document.getElementById('customerName').value.trim(),
-                customerPhone: document.getElementById('customerPhone').value.trim(),
-                customerEmail: document.getElementById('customerEmail').value.trim(),
-                customerAddress: document.getElementById('customerAddress').value.trim(),
-                billDate: document.getElementById('billDate').value,
-                guaranteeDate: document.getElementById('guaranteeDate').value,
-                projectType: document.getElementById('projectType').value,
-                paymentStatus: document.querySelector('input[name="paymentStatus"]:checked').value,
+                customerName: document.getElementById('customerName')?.value.trim(),
+                customerPhone: document.getElementById('customerPhone')?.value.trim(),
+                customerEmail: document.getElementById('customerEmail')?.value.trim(),
+                customerAddress: document.getElementById('customerAddress')?.value.trim(),
+                billDate: document.getElementById('billDate')?.value,
+                guaranteeDate: document.getElementById('guaranteeDate')?.value,
+                projectType: document.getElementById('projectType')?.value,
+                paymentStatus: document.querySelector('input[name="paymentStatus"]:checked')?.value,
                 items,
                 grandTotal
             };
@@ -281,58 +602,61 @@ Customer Information
             if (!validateForm()) return;
 
             document.getElementById('loading').style.display = 'block';
+            document.getElementById('loadingText').textContent = 
+                currentTheme === 'witchcraft' ? 'Brewing your mystical grimoire...' : 'Generating your professional bill...';
             
             setTimeout(() => {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 const data = getFormData();
+                const theme = themes[currentTheme];
 
-                // Colors
-                const primaryColor = [102, 126, 234];
-                const accentColor = [78, 205, 196];
-                const darkGray = [44, 62, 80];
+                // Theme-specific colors
+                let primaryColor, accentColor, darkColor;
+                if (currentTheme === 'witchcraft') {
+                    primaryColor = [45, 27, 105];
+                    accentColor = [139, 92, 246];
+                    darkColor = [30, 20, 60];
+                } else {
+                    primaryColor = [102, 126, 234];
+                    accentColor = [78, 205, 196];
+                    darkColor = [44, 62, 80];
+                }
+
                 const lightGray = [248, 249, 250];
 
                 // Header Background
-                doc.setFillColor(102, 126, 234);
+                doc.setFillColor(...primaryColor);
                 doc.rect(0, 0, 210, 50, 'F');
                 
-                // Robot emoji and title
+                // Title and emoji
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(28);
-                doc.setFont('Roboto', 'bold');
-                doc.text('SILITECH', 105, 25, { align: 'center' });
+                doc.setFont('helvetica', 'bold');
+                doc.text(theme.name, 105, 25, { align: 'center' });
                 
                 doc.setFontSize(14);
-                doc.setFont('Roboto', 'normal');
-                doc.text('ROBOTICS & ELECTRONICS DEPARTMENT', 105, 35, { align: 'center' });
-                // Add email text
-doc.text('Email: silitechservices@gmail.com | WP : +91 7439442752 ', 105, 43, { align: 'center' });
-
-// Add WhatsApp button image
-const imgData = 'data:image/png;base64,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'; // Replace with the Base64 string of WhatsAppButtonGreenLarge.png
-doc.addImage(imgData, 'PNG', 90, 50, 30, 10); // Adjust position and size as needed
-
-// Add clickable link
-doc.link(90, 50, 30, 10, { url: 'https://wa.me/917439442752' });
+                doc.setFont('helvetica', 'normal');
+                doc.text(theme.tagline, 105, 35, { align: 'center' });
+                doc.text(theme.contact, 105, 43, { align: 'center' });
 
                 // Invoice header
-                doc.setTextColor(...darkGray);
+                doc.setTextColor(...darkColor);
                 doc.setFontSize(20);
-                doc.setFont('Roboto', 'bold');
-                doc.text('INVOICE', 20, 70);
+                doc.setFont('helvetica', 'bold');
+                doc.text(currentTheme === 'witchcraft' ? 'MYSTICAL GRIMOIRE' : 'INVOICE', 20, 70);
                 
                 doc.setFontSize(11);
-                doc.setFont('Roboto', 'normal');
-                doc.text(`Bill Date: ${new Date(data.billDate).toLocaleDateString('en-IN')}`, 20, 82);
-                doc.text(`Bill No: ST-${Date.now().toString().slice(-6)}`, 20, 92);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`${currentTheme === 'witchcraft' ? 'Ritual' : 'Bill'} Date: ${new Date(data.billDate).toLocaleDateString('en-IN')}`, 20, 82);
+                doc.text(`${currentTheme === 'witchcraft' ? 'Grimoire' : 'Bill'} No: ${theme.name.substring(0,2)}-${Date.now().toString().slice(-6)}`, 20, 92);
                 
                 if (data.guaranteeDate) {
-                    doc.text(`Guarantee Till: ${new Date(data.guaranteeDate).toLocaleDateString('en-IN')}`, 20, 102);
+                    doc.text(`${currentTheme === 'witchcraft' ? 'Magic Warranty' : 'Guarantee'} Till: ${new Date(data.guaranteeDate).toLocaleDateString('en-IN')}`, 20, 102);
                 }
 
                 if (data.projectType) {
-                    doc.text(`Project Type: ${data.projectType}`, 20, 112);
+                    doc.text(`${currentTheme === 'witchcraft' ? 'Service' : 'Project'} Type: ${data.projectType}`, 20, 112);
                 }
 
                 // Payment Status Stamp
@@ -348,8 +672,11 @@ doc.link(90, 50, 30, 10, { url: 'https://wa.me/917439442752' });
                 doc.setLineWidth(3);
                 doc.rect(stampX, stampY, 45, 18);
                 doc.setFontSize(16);
-                doc.setFont('Roboto', 'bold');
-                doc.text(data.paymentStatus, stampX + 22.5, stampY + 12, { align: 'center' });
+                doc.setFont('helvetica', 'bold');
+                const statusText = currentTheme === 'witchcraft' ? 
+                    (data.paymentStatus === 'PAID' ? 'BLESSED' : 'PENDING') : 
+                    data.paymentStatus;
+                doc.text(statusText, stampX + 22.5, stampY + 12, { align: 'center' });
 
                 // Customer Information Box
                 doc.setFillColor(...lightGray);
@@ -358,19 +685,19 @@ doc.link(90, 50, 30, 10, { url: 'https://wa.me/917439442752' });
                 doc.setLineWidth(1);
                 doc.rect(20, 125, 170, 45);
 
-                doc.setTextColor(...darkGray);
+                doc.setTextColor(...darkColor);
                 doc.setFontSize(14);
-                doc.setFont('Roboto', 'bold');
-                doc.text('BILL TO:', 25, 138);
+                doc.setFont('helvetica', 'bold');
+                doc.text(currentTheme === 'witchcraft' ? 'MYSTICAL CLIENT:' : 'BILL TO:', 25, 138);
                 
                 doc.setFontSize(12);
-                doc.setFont('Roboto', 'normal');
+                doc.setFont('helvetica', 'normal');
                 doc.text(data.customerName, 25, 150);
                 if (data.customerPhone) {
-                    doc.text(` ${data.customerPhone}`, 25, 160);
+                    doc.text(`📱 ${data.customerPhone}`, 25, 160);
                 }
                 if (data.customerEmail) {
-                    doc.text(` ${data.customerEmail}`, 100, 160);
+                    doc.text(`📧 ${data.customerEmail}`, 100, 160);
                 }
                 if (data.customerAddress) {
                     const addressLines = doc.splitTextToSize(data.customerAddress, 80);
@@ -386,8 +713,8 @@ doc.link(90, 50, 30, 10, { url: 'https://wa.me/917439442752' });
                 
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(11);
-                doc.setFont('Roboto', 'bold');
-                doc.text('ITEM/SERVICE', 25, yPos);
+                doc.setFont('helvetica', 'bold');
+                doc.text(currentTheme === 'witchcraft' ? 'MYSTICAL SERVICE' : 'ITEM/SERVICE', 25, yPos);
                 doc.text('RATE (Rs)', 110, yPos);
                 doc.text('QTY', 140, yPos);
                 doc.text('TOTAL (Rs)', 165, yPos);
@@ -395,8 +722,8 @@ doc.link(90, 50, 30, 10, { url: 'https://wa.me/917439442752' });
                 yPos += 20;
 
                 // Items
-                doc.setTextColor(...darkGray);
-                doc.setFont('Roboto', 'normal');
+                doc.setTextColor(...darkColor);
+                doc.setFont('helvetica', 'normal');
                 
                 data.items.forEach((item, index) => {
                     if (yPos > 250) {
@@ -424,88 +751,193 @@ doc.link(90, 50, 30, 10, { url: 'https://wa.me/917439442752' });
                 doc.rect(120, yPos - 8, 70, 15, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(14);
-                doc.setFont('Roboto', 'bold');
+                doc.setFont('helvetica', 'bold');
                 doc.text('GRAND TOTAL:', 125, yPos);
                 doc.text(`Rs${data.grandTotal.toFixed(2)}`, 165, yPos);
 
                 // Footer
                 const footerY = 270;
-                doc.setTextColor(...darkGray);
+                doc.setTextColor(...darkColor);
                 doc.setFontSize(10);
-                doc.setFont('Roboto', 'italic');
-                doc.text('Thank you for choosing SILITECH!', 105, footerY, { align: 'center' });
-                doc.text('For support: silitechservices@gmail.com', 105, footerY + 20, { align: 'center' });
-                doc.text('Made by Soupy_Services', 105, footerY + 10, { align: 'center' });
+                doc.setFont('helvetica', 'italic');
+                const thankYouText = currentTheme === 'witchcraft' ? 
+                    'May your path be blessed with magic!' : 
+                    `Thank you for choosing ${theme.name}!`;
+                doc.text(thankYouText, 105, footerY, { align: 'center' });
+                doc.text(`For support: ${theme.contact.split('|')[0].trim()}`, 105, footerY + 10, { align: 'center' });
+                
+                // Credits section
+                doc.setFontSize(8);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Made with ❤️ by Souptik Samanta', 105, footerY + 20, { align: 'center' });
+                doc.text('Website: soup-codes.site - Bill Generator Platform', 105, footerY + 27, { align: 'center' });
 
                 // Save PDF
-                const fileName = `SILITECH_Bill_${data.customerName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+                const fileName = `${theme.name}_${currentTheme === 'witchcraft' ? 'Grimoire' : 'Bill'}_${data.customerName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
                 doc.save(fileName);
                 
                 document.getElementById('loading').style.display = 'none';
             }, 1500);
         }
 
+        function generateBusinessCard() {
+            if (!validateForm()) return;
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loadingText').textContent = 'Generating your Waterny business card...';
+            
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape', 'mm', [85.6, 53.98]); // Standard business card size
+                const data = getFormData();
+                
+                // Theme colors
+                const themes = {
+                    blue: { bg: [14, 165, 233], accent: [56, 189, 248] },
+                    green: { bg: [34, 197, 94], accent: [74, 222, 128] },
+                    purple: { bg: [147, 51, 234], accent: [168, 85, 247] },
+                    gradient: { bg: [251, 146, 60], accent: [252, 211, 77] }
+                };
+                
+                const selectedTheme = themes[data.theme] || themes.blue;
+                
+                // Background
+                doc.setFillColor(...selectedTheme.bg);
+                doc.rect(0, 0, 85.6, 53.98, 'F');
+                
+                // Accent elements
+                doc.setFillColor(...selectedTheme.accent);
+                doc.circle(75, 10, 8, 'F');
+                doc.circle(10, 45, 5, 'F');
+                
+                // Content
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text(data.name, 10, 15);
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(data.title, 10, 22);
+                
+                if (data.company) {
+                    doc.setFontSize(8);
+                    doc.text(data.company, 10, 28);
+                }
+                
+                // Contact info
+                doc.setFontSize(8);
+                let yPos = 35;
+                doc.text(`📧 ${data.email}`, 10, yPos);
+                yPos += 4;
+                doc.text(`📱 ${data.phone}`, 10, yPos);
+                
+                if (data.website) {
+                    yPos += 4;
+                    doc.text(`🌐 ${data.website}`, 10, yPos);
+                }
+                
+                if (data.location) {
+                    yPos += 4;
+                    doc.text(`📍 ${data.location}`, 10, yPos);
+                }
+                
+                // Waterny branding
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text('💧 WATERNY', 60, 48);
+                
+                // Credits (very small)
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(200, 200, 200);
+                doc.text('Made by Souptik Samanta | soup-codes.site', 5, 52);
+                
+                // Save
+                const fileName = `Waterny_Card_${data.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+                doc.save(fileName);
+                
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+        }
+
+        function downloadCardAsPNG() {
+            if (!validateForm()) return;
+            
+            const card = document.querySelector('.waterny-card');
+            
+            // Use html2canvas if available, otherwise show message
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(card).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `Waterny_Card_${Date.now()}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            } else {
+                alert('PNG download requires html2canvas library. Use PDF generation for now.');
+            }
+        }
+
         function previewBill() {
             if (!validateForm()) return;
             
             const data = getFormData();
+            const theme = themes[currentTheme];
+            
             let previewContent = `
-                <div style="text-align: center; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 30px;">
-                    <h1 style="font-size: 2.5em;">🤖 SILITECH</h1>
-                    <h2>ROBOTICS & ELECTRONICS DEPARTMENT</h2>
+                <div style="text-align: center; background: ${currentTheme === 'witchcraft' ? 'linear-gradient(135deg, #2d1b69, #8b5cf6)' : 'linear-gradient(135deg, #667eea, #764ba2)'}; color: white; padding: 30px;">
+                    <h1 style="font-size: 2.5em;">${theme.emoji} ${theme.name}</h1>
+                    <h2>${theme.tagline}</h2>
                 </div>
-                <div style="padding: 20px;">
-                    <h3>Customer Information</h3>
+                <div style="padding: 20px; font-family: Arial, sans-serif;">
+                    <h3>${currentTheme === 'witchcraft' ? 'Mystical Client Information' : 'Customer Information'}</h3>
                     <p><strong>Name:</strong> ${data.customerName}</p>
                     <p><strong>Phone:</strong> ${data.customerPhone || 'N/A'}</p>
                     <p><strong>Email:</strong> ${data.customerEmail || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${data.customerAddress || 'N/A'}</p>
                     <p><strong>Date:</strong> ${new Date(data.billDate).toLocaleDateString('en-IN')}</p>
-                <p><strong>Status:</strong> ${data.paymentStatus}</p>
-                <hr>
-                <h3>Items:</h3>
+                    <p><strong>Status:</strong> ${data.paymentStatus}</p>
+                    ${data.projectType ? `<p><strong>Type:</strong> ${data.projectType}</p>` : ''}
+                    <hr>
+                    <h3>${currentTheme === 'witchcraft' ? 'Mystical Services:' : 'Items & Services:'}</h3>
             `;
             
             data.items.forEach((item, index) => {
                 previewContent += `
-                    <p>${index + 1}. ${item.name} - Rs${item.cost} × ${item.qty} (GST: ${item.gstRate}%) = Rs${item.finalAmount.toFixed(2)}</p>
+                    <p>${index + 1}. ${item.name} - Rs${item.cost} × ${item.qty} = Rs${item.itemTotal.toFixed(2)}</p>
                 `;
             });
             
             previewContent += `
                 <hr>
-                <p><strong>Subtotal: Rs${data.subtotal.toFixed(2)}</strong></p>
-                <p><strong>Total GST: Rs${data.totalGst.toFixed(2)}</strong></p>
-                <p><strong>Grand Total: Rs${data.grandTotal.toFixed(2)}</strong></p>
+                <p style="font-size: 1.2em;"><strong>Grand Total: Rs${data.grandTotal.toFixed(2)}</strong></p>
+                <hr>
+                <p style="text-align: center; color: #666; font-style: italic;">
+                    ${currentTheme === 'witchcraft' ? 'May your journey be blessed with magic!' : 'Thank you for choosing ' + theme.name + '!'}
+                </p>
             `;
             
             const previewWindow = window.open('', 'Preview', 'width=600,height=800');
             previewWindow.document.write(`
                 <html>
-                    <head><title>Bill Preview</title></head>
-                    <body style="font-family: Arial, sans-serif; padding: 20px;">
+                    <head>
+                        <title>${currentTheme === 'witchcraft' ? 'Mystical Grimoire' : 'Bill'} Preview</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; margin: 0; }
+                            .no-print { margin: 20px 0; text-align: center; }
+                            @media print { .no-print { display: none; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="no-print">
+                            <button onclick="window.print()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Preview</button>
+                        </div>
                         ${previewContent}
                     </body>
                 </html>
             `);
         }
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded, initializing...');
-            attachCalculationListeners();
-            calculateTotals();
-            updateRemoveButtons();
-            
-            // Add click handler for the add item button
-            const addButton = document.querySelector('.items-header .btn-primary');
-            if (addButton) {
-                addButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('Add button clicked');
-                    addItem();
-                });
-            }
-        });
     </script>
     
 </body>
