@@ -15,11 +15,10 @@
     <!-- Theme Selection Modal -->
     <div id="themeModal" class="modal">
         <div class="modal-content">
-            <h2>🎨 Choose Your Theme</h2>
+            <h2>Choose Your Theme</h2>
             <div class="theme-grid">
                 <div class="theme-card" onclick="selectTheme('silitech')">
                     <div class="theme-preview silitech-preview">
-                        <span class="theme-emoji">🤖</span>
                         <h3>SILITECH</h3>
                         <p>Robotics & Electronics</p>
                     </div>
@@ -28,7 +27,6 @@
                 
                 <div class="theme-card" onclick="selectTheme('witchcraft')">
                     <div class="theme-preview witchcraft-preview">
-                        <span class="theme-emoji">🔮</span>
                         <h3>WITCHCRAFT</h3>
                         <p>Vision Meeting Perfection</p>
                     </div>
@@ -37,11 +35,18 @@
                 
                 <div class="theme-card" onclick="selectTheme('waterny')">
                     <div class="theme-preview waterny-preview">
-                        <span class="theme-emoji">💧</span>
-                        <h3>WATERNY CARDS</h3>
-                        <p>Digital Business Cards</p>
+                        <h3>WATERNY BUSINESS CARDS</h3>
+                        <p>Professional Digital Business Cards</p>
                     </div>
-                    <button class="theme-btn">Select WATERNY</button>
+                    <button class="theme-btn">Create Business Card</button>
+                </div>
+                
+                <div class="theme-card" onclick="selectTheme('warranty')">
+                    <div class="theme-preview warranty-preview">
+                        <h3>WARRANTY CARD</h3>
+                        <p>SILITECH Official Warranty</p>
+                    </div>
+                    <button class="theme-btn">Select WARRANTY</button>
                 </div>
             </div>
         </div>
@@ -54,7 +59,7 @@
 
         <!-- Theme Switcher Button -->
         <div class="theme-switcher">
-            <button class="btn btn-theme" onclick="showThemeModal()">🎨 Switch Theme</button>
+            <button class="btn btn-theme" onclick="showThemeModal()">Switch Theme</button>
         </div>
 
         <!-- Dynamic Form Section -->
@@ -68,7 +73,7 @@
         </div>
 
         <div class="love-footer">
-            Made with <span class="heart">❤️</span> by Souptik Samanta | Multi-Theme Generator
+            Made  <span class="heart"></span> by Souptik
             <br>
             <small style="opacity: 0.8;">Website: soup-codes.site - Professional Bill & Card Generator</small>
         </div>
@@ -82,13 +87,69 @@
     <script>
         let currentTheme = 'silitech';
         let itemCount = 1;
+        
+        // Data storage for bills and sequential numbering
+        const DATA_STORAGE_KEY = 'billgen_data';
+        const COUNTERS_KEY = 'billgen_counters';
+        
+        // Initialize storage
+        function initStorage() {
+            if (!localStorage.getItem(DATA_STORAGE_KEY)) {
+                localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(COUNTERS_KEY)) {
+                localStorage.setItem(COUNTERS_KEY, JSON.stringify({
+                    silitech: 1,
+                    witchcraft: 1,
+                    warranty: 1
+                }));
+            }
+        }
+        
+        // Get next bill number
+        function getNextBillNumber(theme) {
+            const counters = JSON.parse(localStorage.getItem(COUNTERS_KEY));
+            const prefix = theme === 'silitech' ? 'ST' : theme === 'witchcraft' ? 'WC' : 'WR';
+            const number = counters[theme].toString().padStart(4, '0');
+            return `${prefix}-${number}`;
+        }
+        
+        // Update counter
+        function updateCounter(theme) {
+            const counters = JSON.parse(localStorage.getItem(COUNTERS_KEY));
+            counters[theme]++;
+            localStorage.setItem(COUNTERS_KEY, JSON.stringify(counters));
+        }
+        
+        // Save bill data
+        function saveBillData(billData) {
+            const data = JSON.parse(localStorage.getItem(DATA_STORAGE_KEY));
+            data.push({
+                ...billData,
+                timestamp: new Date().toISOString(),
+                id: Date.now()
+            });
+            localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // Generate verification barcode (simple encoding with secret key)
+        function generateVerificationCode(billNumber) {
+            const secretKey = 'SILITECH2024SECURE';
+            let encoded = '';
+            for (let i = 0; i < billNumber.length; i++) {
+                const charCode = billNumber.charCodeAt(i);
+                const keyChar = secretKey.charCodeAt(i % secretKey.length);
+                encoded += (charCode + keyChar).toString(16).padStart(3, '0');
+            }
+            return encoded.toUpperCase();
+        }
 
         // Theme configurations
         const themes = {
             silitech: {
                 name: 'SILITECH',
                 tagline: 'ROBOTICS & ELECTRONICS DEPARTMENT',
-                emoji: '🤖',
+                emoji: '',
                 contact: 'silitechservices@gmail.com | WP: +91 7439442752',
                 colors: {
                     primary: '#667eea',
@@ -100,24 +161,35 @@
             witchcraft: {
                 name: 'WITCHCRAFT',
                 tagline: 'Vision Meeting Perfection',
-                emoji: '🔮',
-                contact: 'mysticalservices@witchcraft.com | Crystal Ball: +91 9876543210',
+                emoji: '',
+                contact: 'silitechservices@gmail.com | WP: +91 7439442752',
                 colors: {
                     primary: '#2d1b69',
                     secondary: '#8b5cf6',
                     accent: '#c084fc'
                 },
-                projectTypes: ['Mystical Readings', 'Crystal Healing', 'Tarot Sessions', 'Spell Casting', 'Enchantments']
+                projectTypes: ['PCB Design', 'Circuit Analysis', 'Electronic Prototyping', 'Embedded Systems', 'Hardware Testing']
             },
             waterny: {
                 name: 'WATERNY CARDS',
                 tagline: 'Professional Digital Business Cards',
-                emoji: '💧',
+                emoji: '',
                 contact: 'hello@waterny.com | Phone: +91 8888888888',
                 colors: {
                     primary: '#0ea5e9',
                     secondary: '#0284c7',
                     accent: '#38bdf8'
+                }
+            },
+            warranty: {
+                name: 'SILITECH WARRANTY',
+                tagline: 'Official Warranty Certificate',
+                emoji: '',
+                contact: 'silitechservices@gmail.com | WP: +91 7439442752',
+                colors: {
+                    primary: '#28a745',
+                    secondary: '#20c997',
+                    accent: '#17a2b8'
                 }
             }
         };
@@ -139,6 +211,8 @@
             
             if (theme === 'waterny') {
                 generateWaternyCardForm();
+            } else if (theme === 'warranty') {
+                generateWarrantyForm();
             } else {
                 generateBillForm();
             }
@@ -154,24 +228,25 @@
                 headerElement.className = 'header witchcraft-header';
                 headerElement.innerHTML = `
                     <div class="mystical-bg"></div>
-                    <span class="theme-emoji">${theme.emoji}</span>
                     <h1>${theme.name}</h1>
                     <p>${theme.tagline}</p>
-                    <div class="mystical-symbols">✨ 🌙 ⭐ 🔮 ✨</div>
                 `;
             } else if (currentTheme === 'waterny') {
                 headerElement.className = 'header waterny-header';
                 headerElement.innerHTML = `
                     <div class="water-bg"></div>
-                    <span class="theme-emoji">${theme.emoji}</span>
                     <h1>${theme.name}</h1>
                     <p>${theme.tagline}</p>
-                    <div class="water-drops">💧 💎 💧 🌊 💧</div>
+                `;
+            } else if (currentTheme === 'warranty') {
+                headerElement.className = 'header warranty-header';
+                headerElement.innerHTML = `
+                    <h1>${theme.name}</h1>
+                    <p>${theme.tagline}</p>
                 `;
             } else {
                 headerElement.className = 'header silitech-header';
                 headerElement.innerHTML = `
-                    <span class="theme-emoji">${theme.emoji}</span>
                     <h1>${theme.name}</h1>
                     <p>${theme.tagline}</p>
                 `;
@@ -189,35 +264,35 @@
             formElement.innerHTML = `
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="customerName">${currentTheme === 'witchcraft' ? '🔮 Client Name *' : '👤 Customer Name *'}</label>
-                        <input type="text" id="customerName" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical client name' : 'Enter customer name'}" required>
+                        <label for="customerName">${currentTheme === 'witchcraft' ? 'Client Name *' : 'Customer Name *'}</label>
+                        <input type="text" id="customerName" placeholder="${currentTheme === 'witchcraft' ? 'Enter client name' : 'Enter customer name'}" required>
                     </div>
                     <div class="form-group">
-                        <label for="customerPhone">${currentTheme === 'witchcraft' ? '📞 Crystal Communication' : '📱 Phone Number'}</label>
-                        <input type="tel" id="customerPhone" placeholder="${currentTheme === 'witchcraft' ? 'Enter sacred number' : 'Enter phone number'}">
+                        <label for="customerPhone">${currentTheme === 'witchcraft' ? 'Phone Number' : 'Phone Number'}</label>
+                        <input type="tel" id="customerPhone" placeholder="${currentTheme === 'witchcraft' ? 'Enter phone number' : 'Enter phone number'}">
                     </div>
                     <div class="form-group">
-                        <label for="customerEmail">${currentTheme === 'witchcraft' ? '✉️ Mystical Messages' : '📧 Email Address'}</label>
-                        <input type="email" id="customerEmail" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical email' : 'Enter email address'}">
+                        <label for="customerEmail">${currentTheme === 'witchcraft' ? 'Email Address' : 'Email Address'}</label>
+                        <input type="email" id="customerEmail" placeholder="${currentTheme === 'witchcraft' ? 'Enter email address' : 'Enter email address'}">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="customerAddress">${currentTheme === 'witchcraft' ? '🏠 Mystical Dwelling' : '🏠 Customer Address'}</label>
-                    <textarea id="customerAddress" rows="3" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical address' : 'Enter customer address'}"></textarea>
+                    <label for="customerAddress">${currentTheme === 'witchcraft' ? 'Client Address' : 'Customer Address'}</label>
+                    <textarea id="customerAddress" rows="3" placeholder="${currentTheme === 'witchcraft' ? 'Enter client address' : 'Enter customer address'}"></textarea>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="billDate">${currentTheme === 'witchcraft' ? '🌙 Ritual Date' : '📅 Bill Date'}</label>
+                        <label for="billDate">${currentTheme === 'witchcraft' ? 'Service Date' : 'Bill Date'}</label>
                         <input type="date" id="billDate">
                     </div>
                     <div class="form-group">
-                        <label for="guaranteeDate">${currentTheme === 'witchcraft' ? '⭐ Magic Warranty Till' : '🛡️ Guarantee Till'}</label>
+                        <label for="guaranteeDate">${currentTheme === 'witchcraft' ? 'Warranty Till' : 'Guarantee Till'}</label>
                         <input type="date" id="guaranteeDate">
                     </div>
                     <div class="form-group">
-                        <label for="projectType">${currentTheme === 'witchcraft' ? '🔮 Service Type' : '⚡ Project Type'}</label>
+                        <label for="projectType">${currentTheme === 'witchcraft' ? 'Service Type' : 'Project Type'}</label>
                         <select id="projectType">
                             <option value="">Select Service Type</option>
                             ${projectOptions}
@@ -227,15 +302,15 @@
 
                 <div class="items-section ${currentTheme}-items">
                     <div class="items-header">
-                        <h3>${currentTheme === 'witchcraft' ? '🔮 Mystical Services' : '🔧 Items & Services'}</h3>
+                        <h3>${currentTheme === 'witchcraft' ? 'Services & Components' : 'Items & Services'}</h3>
                         <button type="button" class="btn btn-primary" onclick="addItem()">+ Add Item</button>
                     </div>
                     
                     <div id="itemsContainer">
                         <div class="item-row">
                             <div>
-                                <label>${currentTheme === 'witchcraft' ? 'Mystical Service/Item *' : 'Item/Service Name *'}</label>
-                                <input type="text" class="item-name" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical service' : 'Enter item or service name'}" required>
+                                <label>${currentTheme === 'witchcraft' ? 'Service/Component Name *' : 'Item/Service Name *'}</label>
+                                <input type="text" class="item-name" placeholder="${currentTheme === 'witchcraft' ? 'Enter service or component name' : 'Enter item or service name'}" required>
                             </div>
                             <div>
                                 <label>Cost (Rs) *</label>
@@ -254,31 +329,31 @@
                 </div>
 
                 <div class="payment-status ${currentTheme}-payment">
-                    <label><strong>${currentTheme === 'witchcraft' ? '💰 Mystical Exchange:' : '💳 Payment Status:'}</strong></label>
+                    <label><strong>${currentTheme === 'witchcraft' ? 'Payment Status:' : 'Payment Status:'}</strong></label>
                     <div class="radio-group">
                         <input type="radio" id="paid" name="paymentStatus" value="PAID" checked>
-                        <label for="paid">${currentTheme === 'witchcraft' ? '✨ Blessed (PAID)' : '✅ PAID'}</label>
+                        <label for="paid">${currentTheme === 'witchcraft' ? 'PAID' : 'PAID'}</label>
                     </div>
                     <div class="radio-group">
                         <input type="radio" id="unpaid" name="paymentStatus" value="UNPAID">
-                        <label for="unpaid">${currentTheme === 'witchcraft' ? '🌙 Awaiting Energy (UNPAID)' : '⏳ UNPAID'}</label>
+                        <label for="unpaid">${currentTheme === 'witchcraft' ? 'UNPAID' : 'UNPAID'}</label>
                     </div>
                 </div>
 
                 <div class="summary ${currentTheme}-summary" id="billSummary">
-                    <h3>${currentTheme === 'witchcraft' ? '🔮 Mystical Total' : '💰 Bill Summary'}</h3>
+                    <h3>${currentTheme === 'witchcraft' ? 'Bill Summary' : 'Bill Summary'}</h3>
                     <div class="summary-row">
                         <span>Subtotal:</span>
                         <span id="subtotal">Rs 0.00</span>
                     </div>
                     <div class="summary-row total">
-                        <span>${currentTheme === 'witchcraft' ? '✨ Grand Mystical Total:' : '🎯 Grand Total:'}</span>
+                        <span>${currentTheme === 'witchcraft' ? 'Grand Total:' : 'Grand Total:'}</span>
                         <span id="grandTotal">Rs 0.00</span>
                     </div>
                 </div>
 
                 <div class="disclaimer">
-                    <p>⚠️ This is a demo bill generator for educational purposes. Not for commercial use.</p>
+                    <p>WARNING: This is a demo bill generator for educational purposes. Not for commercial use.</p>
                 </div>
             `;
             
@@ -299,13 +374,13 @@
                             </div>
                             <div class="card-body">
                                 <div class="contact-info">
-                                    <p><span class="icon">📧</span> <span id="previewEmail">your@email.com</span></p>
-                                    <p><span class="icon">📱</span> <span id="previewPhone">+91 9999999999</span></p>
-                                    <p><span class="icon">🌐</span> <span id="previewWebsite">www.yourwebsite.com</span></p>
-                                    <p><span class="icon">📍</span> <span id="previewLocation">Your Location</span></p>
+                                    <p><span class="icon">Email:</span> <span id="previewEmail">your@email.com</span></p>
+                                    <p><span class="icon">Phone:</span> <span id="previewPhone">+91 9999999999</span></p>
+                                    <p><span class="icon">Web:</span> <span id="previewWebsite">www.yourwebsite.com</span></p>
+                                    <p><span class="icon">Location:</span> <span id="previewLocation">Your Location</span></p>
                                 </div>
                             </div>
-                            <div class="waterny-logo">💧 WATERNY</div>
+                            <div class="waterny-logo">WATERNY</div>
                         </div>
                     </div>
                 </div>
@@ -313,44 +388,44 @@
                 <div class="card-form">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cardName">👤 Full Name *</label>
+                            <label for="cardName">Full Name *</label>
                             <input type="text" id="cardName" placeholder="Enter your full name" required>
                         </div>
                         <div class="form-group">
-                            <label for="cardTitle">💼 Job Title *</label>
+                            <label for="cardTitle">Job Title *</label>
                             <input type="text" id="cardTitle" placeholder="Enter your job title" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cardEmail">📧 Email Address *</label>
+                            <label for="cardEmail">Email Address *</label>
                             <input type="email" id="cardEmail" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group">
-                            <label for="cardPhone">📱 Phone Number *</label>
+                            <label for="cardPhone">Phone Number *</label>
                             <input type="tel" id="cardPhone" placeholder="Enter your phone number" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cardWebsite">🌐 Website/LinkedIn</label>
+                            <label for="cardWebsite">Website/LinkedIn</label>
                             <input type="url" id="cardWebsite" placeholder="Enter your website or LinkedIn">
                         </div>
                         <div class="form-group">
-                            <label for="cardLocation">📍 Location</label>
+                            <label for="cardLocation">Location</label>
                             <input type="text" id="cardLocation" placeholder="Enter your location">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="cardCompany">🏢 Company/Organization</label>
+                        <label for="cardCompany">Company/Organization</label>
                         <input type="text" id="cardCompany" placeholder="Enter company name">
                     </div>
 
                     <div class="card-themes">
-                        <label><strong>🎨 Card Theme:</strong></label>
+                        <label><strong>Card Theme:</strong></label>
                         <div class="theme-selector">
                             <input type="radio" id="blueTheme" name="cardTheme" value="blue" checked>
                             <label for="blueTheme" class="theme-option blue-theme">Ocean Blue</label>
@@ -371,6 +446,79 @@
             attachCardListeners();
         }
 
+        function generateWarrantyForm() {
+            const formElement = document.getElementById('dynamicForm');
+            
+            formElement.innerHTML = `
+                <div class="warranty-form">
+                    <h2>Warranty Card Details</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Customer Name *</label>
+                            <input type="text" id="customerName" placeholder="Enter customer name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Phone Number *</label>
+                            <input type="tel" id="customerPhone" placeholder="Enter phone number" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customerAddress">Customer Address *</label>
+                        <textarea id="customerAddress" rows="3" placeholder="Enter complete address" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="billNumber">Bill Number *</label>
+                            <input type="text" id="billNumber" placeholder="Enter linked bill number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchaseDate">Purchase Date *</label>
+                            <input type="date" id="purchaseDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">Product Name *</label>
+                            <input type="text" id="productName" placeholder="Enter product name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="warrantyPeriod">Warranty Period (months) *</label>
+                            <input type="number" id="warrantyPeriod" min="1" max="120" value="12" required>
+                        </div>
+                    </div>
+
+                    <div class="warranty-preview" id="warrantyPreview">
+                        <h3>Warranty Card Preview</h3>
+                        <div class="warranty-card-preview">
+                            <div class="warranty-header">
+                                <h2>SILITECH</h2>
+                                <p>WARRANTY CARD</p>
+                            </div>
+                            <div class="warranty-details">
+                                <p><strong>Customer:</strong> <span id="previewCustomerName">Customer Name</span></p>
+                                <p><strong>Product:</strong> <span id="previewProductName">Product Name</span></p>
+                                <p><strong>Bill No:</strong> <span id="previewBillNumber">Bill Number</span></p>
+                                <p><strong>Purchase Date:</strong> <span id="previewPurchaseDate">Purchase Date</span></p>
+                                <p><strong>Warranty Period:</strong> <span id="previewWarrantyPeriod">12 months</span></p>
+                                <div class="verification-code">
+                                    <p><strong>Verification Code:</strong> <span id="previewVerificationCode">VERIFY123</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="generate-btn" onclick="generateWarrantyPDF()">Generate Warranty Card PDF</button>
+                </div>
+            `;
+            
+            initializeWarrantyDates();
+            attachWarrantyListeners();
+        }
+
         function addItem() {
             itemCount++;
             const container = document.getElementById('itemsContainer');
@@ -380,8 +528,8 @@
             const theme = themes[currentTheme];
             newItem.innerHTML = `
                 <div>
-                    <label>${currentTheme === 'witchcraft' ? 'Mystical Service/Item *' : 'Item/Service Name *'}</label>
-                    <input type="text" class="item-name" placeholder="${currentTheme === 'witchcraft' ? 'Enter mystical service' : 'Enter item or service name'}" required>
+                    <label>${currentTheme === 'witchcraft' ? 'Service/Component Name *' : 'Item/Service Name *'}</label>
+                    <input type="text" class="item-name" placeholder="${currentTheme === 'witchcraft' ? 'Enter service or component name' : 'Enter item or service name'}" required>
                 </div>
                 <div>
                     <label>Cost (Rs) *</label>
@@ -407,19 +555,19 @@
             if (currentTheme === 'waterny') {
                 actionsElement.innerHTML = `
                     <button type="button" class="btn btn-success" onclick="generateBusinessCard()" style="margin-right: 20px;">
-                        💳 Generate Business Card
+                        Generate Business Card
                     </button>
                     <button type="button" class="btn btn-primary" onclick="downloadCardAsPNG()">
-                        📱 Download as PNG
+                        Download as PNG
                     </button>
                 `;
             } else {
                 actionsElement.innerHTML = `
                     <button type="button" class="btn btn-success" onclick="generatePDF()" style="margin-right: 20px;">
-                        📄 Generate PDF ${currentTheme === 'witchcraft' ? 'Grimoire' : 'Bill'}
+                        Generate PDF ${currentTheme === 'witchcraft' ? 'Invoice' : 'Bill'}
                     </button>
                     <button type="button" class="btn btn-primary" onclick="previewBill()">
-                        👁️ Preview ${currentTheme === 'witchcraft' ? 'Mystical Bill' : 'Bill'}
+                        Preview ${currentTheme === 'witchcraft' ? 'Invoice' : 'Bill'}
                     </button>
                 `;
             }
@@ -493,6 +641,52 @@
             });
         }
 
+        function initializeWarrantyDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('purchaseDate').value = today;
+        }
+
+        function attachWarrantyListeners() {
+            const inputs = ['customerName', 'productName', 'billNumber', 'purchaseDate', 'warrantyPeriod'];
+            
+            inputs.forEach(inputId => {
+                const element = document.getElementById(inputId);
+                if (element) {
+                    element.addEventListener('input', updateWarrantyPreview);
+                }
+            });
+            
+            updateWarrantyPreview();
+        }
+
+        function updateWarrantyPreview() {
+            const customerName = document.getElementById('customerName')?.value || 'Customer Name';
+            const productName = document.getElementById('productName')?.value || 'Product Name';
+            const billNumber = document.getElementById('billNumber')?.value || 'Bill Number';
+            const purchaseDate = document.getElementById('purchaseDate')?.value || 'Purchase Date';
+            const warrantyPeriod = document.getElementById('warrantyPeriod')?.value || '12';
+            
+            // Update preview elements
+            const previewCustomerName = document.getElementById('previewCustomerName');
+            const previewProductName = document.getElementById('previewProductName');
+            const previewBillNumber = document.getElementById('previewBillNumber');
+            const previewPurchaseDate = document.getElementById('previewPurchaseDate');
+            const previewWarrantyPeriod = document.getElementById('previewWarrantyPeriod');
+            const previewVerificationCode = document.getElementById('previewVerificationCode');
+            
+            if (previewCustomerName) previewCustomerName.textContent = customerName;
+            if (previewProductName) previewProductName.textContent = productName;
+            if (previewBillNumber) previewBillNumber.textContent = billNumber;
+            if (previewPurchaseDate) previewPurchaseDate.textContent = purchaseDate;
+            if (previewWarrantyPeriod) previewWarrantyPeriod.textContent = warrantyPeriod + ' months';
+            
+            // Generate verification code
+            if (billNumber && customerName) {
+                const verificationCode = generateVerificationCode(billNumber, customerName);
+                if (previewVerificationCode) previewVerificationCode.textContent = verificationCode;
+            }
+        }
+
         function attachCalculationListeners(container = document) {
             const inputs = container.querySelectorAll('.item-cost, .item-qty');
             inputs.forEach(input => {
@@ -536,7 +730,7 @@
             
             const customerName = document.getElementById('customerName')?.value.trim();
             if (!customerName) {
-                alert(currentTheme === 'witchcraft' ? 'Please enter the mystical client name' : 'Please enter customer name');
+                alert(currentTheme === 'witchcraft' ? 'Please enter the client name' : 'Please enter customer name');
                 return false;
             }
 
@@ -603,7 +797,7 @@
 
             document.getElementById('loading').style.display = 'block';
             document.getElementById('loadingText').textContent = 
-                currentTheme === 'witchcraft' ? 'Brewing your mystical grimoire...' : 'Generating your professional bill...';
+                currentTheme === 'witchcraft' ? 'Generating your professional invoice...' : 'Generating your professional bill...';
             
             setTimeout(() => {
                 const { jsPDF } = window.jspdf;
@@ -644,15 +838,15 @@
                 doc.setTextColor(...darkColor);
                 doc.setFontSize(20);
                 doc.setFont('helvetica', 'bold');
-                doc.text(currentTheme === 'witchcraft' ? 'MYSTICAL GRIMOIRE' : 'INVOICE', 20, 70);
+                doc.text(currentTheme === 'witchcraft' ? 'INVOICE' : 'INVOICE', 20, 70);
                 
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
-                doc.text(`${currentTheme === 'witchcraft' ? 'Ritual' : 'Bill'} Date: ${new Date(data.billDate).toLocaleDateString('en-IN')}`, 20, 82);
-                doc.text(`${currentTheme === 'witchcraft' ? 'Grimoire' : 'Bill'} No: ${theme.name.substring(0,2)}-${Date.now().toString().slice(-6)}`, 20, 92);
+                doc.text(`${currentTheme === 'witchcraft' ? 'Service' : 'Bill'} Date: ${new Date(data.billDate).toLocaleDateString('en-IN')}`, 20, 82);
+                doc.text(`${currentTheme === 'witchcraft' ? 'Invoice' : 'Bill'} No: ${theme.name.substring(0,2)}-${Date.now().toString().slice(-6)}`, 20, 92);
                 
                 if (data.guaranteeDate) {
-                    doc.text(`${currentTheme === 'witchcraft' ? 'Magic Warranty' : 'Guarantee'} Till: ${new Date(data.guaranteeDate).toLocaleDateString('en-IN')}`, 20, 102);
+                    doc.text(`${currentTheme === 'witchcraft' ? 'Warranty' : 'Guarantee'} Till: ${new Date(data.guaranteeDate).toLocaleDateString('en-IN')}`, 20, 102);
                 }
 
                 if (data.projectType) {
@@ -688,16 +882,16 @@
                 doc.setTextColor(...darkColor);
                 doc.setFontSize(14);
                 doc.setFont('helvetica', 'bold');
-                doc.text(currentTheme === 'witchcraft' ? 'MYSTICAL CLIENT:' : 'BILL TO:', 25, 138);
+                doc.text(currentTheme === 'witchcraft' ? 'CLIENT:' : 'BILL TO:', 25, 138);
                 
                 doc.setFontSize(12);
                 doc.setFont('helvetica', 'normal');
                 doc.text(data.customerName, 25, 150);
                 if (data.customerPhone) {
-                    doc.text(`📱 ${data.customerPhone}`, 25, 160);
+                    doc.text(`Phone: ${data.customerPhone}`, 25, 160);
                 }
                 if (data.customerEmail) {
-                    doc.text(`📧 ${data.customerEmail}`, 100, 160);
+                    doc.text(`Email: ${data.customerEmail}`, 100, 160);
                 }
                 if (data.customerAddress) {
                     const addressLines = doc.splitTextToSize(data.customerAddress, 80);
@@ -714,7 +908,7 @@
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'bold');
-                doc.text(currentTheme === 'witchcraft' ? 'MYSTICAL SERVICE' : 'ITEM/SERVICE', 25, yPos);
+                doc.text(currentTheme === 'witchcraft' ? 'SERVICE/COMPONENT' : 'ITEM/SERVICE', 25, yPos);
                 doc.text('RATE (Rs)', 110, yPos);
                 doc.text('QTY', 140, yPos);
                 doc.text('TOTAL (Rs)', 165, yPos);
@@ -761,7 +955,7 @@
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'italic');
                 const thankYouText = currentTheme === 'witchcraft' ? 
-                    'May your path be blessed with magic!' : 
+                    'Thank you for choosing WITCHCRAFT Electronics!' : 
                     `Thank you for choosing ${theme.name}!`;
                 doc.text(thankYouText, 105, footerY, { align: 'center' });
                 doc.text(`For support: ${theme.contact.split('|')[0].trim()}`, 105, footerY + 10, { align: 'center' });
@@ -769,12 +963,33 @@
                 // Credits section
                 doc.setFontSize(8);
                 doc.setTextColor(100, 100, 100);
-                doc.text('Made with ❤️ by Souptik Samanta', 105, footerY + 20, { align: 'center' });
-                doc.text('Website: soup-codes.site - Bill Generator Platform', 105, footerY + 27, { align: 'center' });
+                doc.text('Made by Souptik', 105, footerY + 20, { align: 'center' });
+                doc.text('Website: soup-codes.site', 105, footerY + 27, { align: 'center' });
 
-                // Save PDF
-                const fileName = `${theme.name}_${currentTheme === 'witchcraft' ? 'Grimoire' : 'Bill'}_${data.customerName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+                // Save PDF and store bill data
+                const billNumber = `${theme.name.substring(0,2)}-${Date.now().toString().slice(-6)}`;
+                const fileName = `${theme.name}_${currentTheme === 'witchcraft' ? 'Invoice' : 'Bill'}_${data.customerName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
                 doc.save(fileName);
+                
+                // Store bill data for warranty linking
+                saveBillData({
+                    billNumber,
+                    customerName: data.customerName,
+                    customerPhone: data.customerPhone,
+                    customerAddress: data.customerAddress,
+                    items: data.items,
+                    total: data.grandTotal,
+                    date: data.billDate,
+                    theme: currentTheme
+                });
+                
+                // Show WhatsApp sharing option
+                const whatsappMessage = `Hi! I've generated a ${currentTheme === 'witchcraft' ? 'invoice' : 'bill'} for ${data.customerName}. Bill No: ${billNumber}. Total: Rs${data.grandTotal.toFixed(2)}`;
+                const whatsappUrl = `https://wa.me/918389846113?text=${encodeURIComponent(whatsappMessage)}`;
+                
+                if (confirm('Bill generated successfully! Would you like to share this information via WhatsApp?')) {
+                    window.open(whatsappUrl, '_blank');
+                }
                 
                 document.getElementById('loading').style.display = 'none';
             }, 1500);
@@ -828,55 +1043,49 @@
                 // Contact info
                 doc.setFontSize(8);
                 let yPos = 35;
-                doc.text(`📧 ${data.email}`, 10, yPos);
+                doc.text(`Email: ${data.email}`, 10, yPos);
                 yPos += 4;
-                doc.text(`📱 ${data.phone}`, 10, yPos);
+                doc.text(`Phone: ${data.phone}`, 10, yPos);
                 
                 if (data.website) {
                     yPos += 4;
-                    doc.text(`🌐 ${data.website}`, 10, yPos);
+                    doc.text(`Web: ${data.website}`, 10, yPos);
                 }
                 
                 if (data.location) {
                     yPos += 4;
-                    doc.text(`📍 ${data.location}`, 10, yPos);
+                    doc.text(`Location: ${data.location}`, 10, yPos);
                 }
                 
                 // Waterny branding
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
-                doc.text('💧 WATERNY', 60, 48);
+                doc.text('WATERNY', 60, 48);
                 
                 // Credits (very small)
                 doc.setFontSize(6);
                 doc.setFont('helvetica', 'normal');
                 doc.setTextColor(200, 200, 200);
-                doc.text('Made by Souptik Samanta | soup-codes.site', 5, 52);
+                doc.text('Made by Souptik| soup-codes.site', 5, 52);
                 
                 // Save
                 const fileName = `Waterny_Card_${data.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
                 doc.save(fileName);
+                
+                // Show WhatsApp sharing option
+                const whatsappMessage = `Hi! I've created a professional business card for ${data.name}. Contact: ${data.phone} | Email: ${data.email}`;
+                const whatsappUrl = `https://wa.me/918389846113?text=${encodeURIComponent(whatsappMessage)}`;
+                
+                if (confirm('Business card generated successfully! Would you like to share this information via WhatsApp?')) {
+                    window.open(whatsappUrl, '_blank');
+                }
                 
                 document.getElementById('loading').style.display = 'none';
             }, 1000);
         }
 
         function downloadCardAsPNG() {
-            if (!validateForm()) return;
-            
-            const card = document.querySelector('.waterny-card');
-            
-            // Use html2canvas if available, otherwise show message
-            if (typeof html2canvas !== 'undefined') {
-                html2canvas(card).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `Waterny_Card_${Date.now()}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                });
-            } else {
-                alert('PNG download requires html2canvas library. Use PDF generation for now.');
-            }
+            alert('PNG download feature coming soon! Please use PDF generation for now.');
         }
 
         function previewBill() {
@@ -887,11 +1096,11 @@
             
             let previewContent = `
                 <div style="text-align: center; background: ${currentTheme === 'witchcraft' ? 'linear-gradient(135deg, #2d1b69, #8b5cf6)' : 'linear-gradient(135deg, #667eea, #764ba2)'}; color: white; padding: 30px;">
-                    <h1 style="font-size: 2.5em;">${theme.emoji} ${theme.name}</h1>
+                    <h1 style="font-size: 2.5em;">${theme.name}</h1>
                     <h2>${theme.tagline}</h2>
                 </div>
                 <div style="padding: 20px; font-family: Arial, sans-serif;">
-                    <h3>${currentTheme === 'witchcraft' ? 'Mystical Client Information' : 'Customer Information'}</h3>
+                    <h3>${currentTheme === 'witchcraft' ? 'Client Information' : 'Customer Information'}</h3>
                     <p><strong>Name:</strong> ${data.customerName}</p>
                     <p><strong>Phone:</strong> ${data.customerPhone || 'N/A'}</p>
                     <p><strong>Email:</strong> ${data.customerEmail || 'N/A'}</p>
@@ -900,7 +1109,7 @@
                     <p><strong>Status:</strong> ${data.paymentStatus}</p>
                     ${data.projectType ? `<p><strong>Type:</strong> ${data.projectType}</p>` : ''}
                     <hr>
-                    <h3>${currentTheme === 'witchcraft' ? 'Mystical Services:' : 'Items & Services:'}</h3>
+                    <h3>${currentTheme === 'witchcraft' ? 'Services & Components:' : 'Items & Services:'}</h3>
             `;
             
             data.items.forEach((item, index) => {
@@ -914,7 +1123,7 @@
                 <p style="font-size: 1.2em;"><strong>Grand Total: Rs${data.grandTotal.toFixed(2)}</strong></p>
                 <hr>
                 <p style="text-align: center; color: #666; font-style: italic;">
-                    ${currentTheme === 'witchcraft' ? 'May your journey be blessed with magic!' : 'Thank you for choosing ' + theme.name + '!'}
+                    ${currentTheme === 'witchcraft' ? 'Thank you for choosing WITCHCRAFT Electronics!' : 'Thank you for choosing ' + theme.name + '!'}
                 </p>
             `;
             
@@ -922,7 +1131,7 @@
             previewWindow.document.write(`
                 <html>
                     <head>
-                        <title>${currentTheme === 'witchcraft' ? 'Mystical Grimoire' : 'Bill'} Preview</title>
+                        <title>${currentTheme === 'witchcraft' ? 'Invoice' : 'Bill'} Preview</title>
                         <style>
                             body { font-family: Arial, sans-serif; padding: 20px; margin: 0; }
                             .no-print { margin: 20px 0; text-align: center; }
@@ -937,6 +1146,176 @@
                     </body>
                 </html>
             `);
+        }
+
+        function generateWarrantyPDF() {
+            const customerName = document.getElementById('customerName')?.value;
+            const customerPhone = document.getElementById('customerPhone')?.value;
+            const customerAddress = document.getElementById('customerAddress')?.value;
+            const billNumber = document.getElementById('billNumber')?.value;
+            const purchaseDate = document.getElementById('purchaseDate')?.value;
+            const productName = document.getElementById('productName')?.value;
+            const warrantyPeriod = document.getElementById('warrantyPeriod')?.value;
+
+            if (!customerName || !customerPhone || !customerAddress || !billNumber || !purchaseDate || !productName || !warrantyPeriod) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loadingText').textContent = 'Generating warranty card PDF...';
+            
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // SILITECH branding colors
+                const primaryColor = [102, 126, 234];
+                const accentColor = [78, 205, 196];
+                const darkColor = [44, 62, 80];
+                const lightGray = [248, 249, 250];
+                
+                // Header Background
+                doc.setFillColor(...primaryColor);
+                doc.rect(0, 0, 210, 60, 'F');
+                
+                // Title
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(32);
+                doc.setFont('helvetica', 'bold');
+                doc.text('SILITECH', 105, 30, { align: 'center' });
+                
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'normal');
+                doc.text('WARRANTY CARD', 105, 45, { align: 'center' });
+                
+                doc.setFontSize(12);
+                doc.text('Powering Tomorrow, Today', 105, 55, { align: 'center' });
+
+                // Warranty Card Information Box
+                doc.setFillColor(...lightGray);
+                doc.rect(20, 80, 170, 120, 'F');
+                doc.setDrawColor(...primaryColor);
+                doc.setLineWidth(2);
+                doc.rect(20, 80, 170, 120);
+
+                doc.setTextColor(...darkColor);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text('WARRANTY DETAILS', 105, 95, { align: 'center' });
+
+                // Customer Information
+                let yPos = 115;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Customer Name:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(customerName, 80, yPos);
+
+                yPos += 15;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Phone Number:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(customerPhone, 80, yPos);
+
+                yPos += 15;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Address:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                const addressLines = doc.splitTextToSize(customerAddress, 100);
+                doc.text(addressLines, 80, yPos);
+
+                yPos += 20;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Product Name:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(productName, 80, yPos);
+
+                yPos += 15;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Bill Number:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(billNumber, 80, yPos);
+
+                yPos += 15;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Purchase Date:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(new Date(purchaseDate).toLocaleDateString('en-IN'), 80, yPos);
+
+                yPos += 15;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Warranty Period:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(warrantyPeriod + ' months', 80, yPos);
+
+                // Calculate warranty expiry date
+                const expiryDate = new Date(purchaseDate);
+                expiryDate.setMonth(expiryDate.getMonth() + parseInt(warrantyPeriod));
+                
+                yPos += 15;
+                doc.setFont('helvetica', 'bold');
+                doc.text('Warranty Expires:', 30, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(expiryDate.toLocaleDateString('en-IN'), 80, yPos);
+
+                // Verification Code Section
+                const verificationCode = generateVerificationCode(billNumber, customerName);
+                doc.setFillColor(...accentColor);
+                doc.rect(20, 220, 170, 30, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('VERIFICATION CODE:', 30, 235);
+                doc.setFontSize(16);
+                doc.text(verificationCode, 30, 245);
+
+                // WhatsApp Button Info
+                doc.setTextColor(...darkColor);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text('For warranty claims, contact us on WhatsApp: +91 8389846113', 105, 260, { align: 'center' });
+                doc.text('Include this verification code in your message for faster processing', 105, 270, { align: 'center' });
+
+                // Footer
+                doc.setFontSize(8);
+                doc.setTextColor(100, 100, 100);
+                doc.text('This warranty card is valid only with original purchase receipt', 105, 285, { align: 'center' });
+                doc.text('Made by Souptik/soup-codes.site', 105, 292, { align: 'center' });
+
+                // Save the warranty data
+                const warrantyData = {
+                    customerName,
+                    customerPhone,
+                    customerAddress,
+                    billNumber,
+                    purchaseDate,
+                    productName,
+                    warrantyPeriod,
+                    verificationCode,
+                    issueDate: new Date().toISOString(),
+                    expiryDate: expiryDate.toISOString()
+                };
+                
+                // Save to localStorage for tracking
+                const existingWarranties = JSON.parse(localStorage.getItem('warranties') || '[]');
+                existingWarranties.push(warrantyData);
+                localStorage.setItem('warranties', JSON.stringify(existingWarranties));
+
+                // Save PDF
+                const fileName = `SILITECH_Warranty_Card_${customerName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+                doc.save(fileName);
+                
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show WhatsApp sharing option
+                const whatsappMessage = `Hi! I've generated a warranty card for ${customerName}. Product: ${productName} | Bill No: ${billNumber} | Verification Code: ${verificationCode}`;
+                const whatsappUrl = `https://wa.me/918389846113?text=${encodeURIComponent(whatsappMessage)}`;
+                
+                if (confirm('Warranty card generated successfully! Warranty data has been saved for future reference. Would you like to share this information via WhatsApp?')) {
+                    window.open(whatsappUrl, '_blank');
+                }
+            }, 1500);
         }
     </script>
     
