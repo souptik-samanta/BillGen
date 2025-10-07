@@ -171,10 +171,10 @@
                 projectTypes: ['PCB Design', 'Circuit Analysis', 'Electronic Prototyping', 'Embedded Systems', 'Hardware Testing']
             },
             waterny: {
-                name: 'WATERNY CARDS',
-                tagline: 'Professional Digital Business Cards',
+                name: 'WATERNY BUSINESS CARDS',
+                tagline: 'Professional Digital Business Cards & Networking',
                 emoji: '',
-                contact: 'hello@waterny.com | Phone: +91 8888888888',
+                contact: 'hello@waterny.com | Phone: +91 8888888888 | Create Your Professional Identity',
                 colors: {
                     primary: '#0ea5e9',
                     secondary: '#0284c7',
@@ -237,6 +237,11 @@
                     <div class="water-bg"></div>
                     <h1>${theme.name}</h1>
                     <p>${theme.tagline}</p>
+                    <div class="business-features">
+                        <span>📇 Professional Cards</span>
+                        <span>🌐 Digital Ready</span>
+                        <span>🎨 Multiple Themes</span>
+                    </div>
                 `;
             } else if (currentTheme === 'warranty') {
                 headerElement.className = 'header warranty-header';
@@ -385,59 +390,78 @@
                     </div>
                 </div>
 
-                <div class="card-form">
+                <div class="card-form business-card-form">
+                    <h2>🎨 Create Your Professional Business Card</h2>
+                    <p class="form-description">Design a stunning digital business card that makes a lasting impression!</p>
+                    
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cardName">Full Name *</label>
+                            <label for="cardName">👤 Full Name *</label>
                             <input type="text" id="cardName" placeholder="Enter your full name" required>
                         </div>
                         <div class="form-group">
-                            <label for="cardTitle">Job Title *</label>
-                            <input type="text" id="cardTitle" placeholder="Enter your job title" required>
+                            <label for="cardTitle">💼 Job Title *</label>
+                            <input type="text" id="cardTitle" placeholder="e.g., Senior Developer, Marketing Manager" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cardEmail">Email Address *</label>
-                            <input type="email" id="cardEmail" placeholder="Enter your email" required>
+                            <label for="cardEmail">📧 Email Address *</label>
+                            <input type="email" id="cardEmail" placeholder="your.name@company.com" required>
                         </div>
                         <div class="form-group">
-                            <label for="cardPhone">Phone Number *</label>
-                            <input type="tel" id="cardPhone" placeholder="Enter your phone number" required>
+                            <label for="cardPhone">📱 Phone Number *</label>
+                            <input type="tel" id="cardPhone" placeholder="+91 9999999999" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="cardWebsite">Website/LinkedIn</label>
-                            <input type="url" id="cardWebsite" placeholder="Enter your website or LinkedIn">
+                            <label for="cardWebsite">🌐 Website/LinkedIn</label>
+                            <input type="url" id="cardWebsite" placeholder="www.yourwebsite.com or linkedin.com/in/yourname">
                         </div>
                         <div class="form-group">
-                            <label for="cardLocation">Location</label>
-                            <input type="text" id="cardLocation" placeholder="Enter your location">
+                            <label for="cardLocation">📍 Location</label>
+                            <input type="text" id="cardLocation" placeholder="City, Country">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="cardCompany">Company/Organization</label>
-                        <input type="text" id="cardCompany" placeholder="Enter company name">
+                        <label for="cardCompany">🏢 Company/Organization</label>
+                        <input type="text" id="cardCompany" placeholder="Your Amazing Company Ltd.">
                     </div>
 
-                    <div class="card-themes">
-                        <label><strong>Card Theme:</strong></label>
-                        <div class="theme-selector">
+                    <div class="card-themes professional-themes">
+                        <label><strong>🎨 Choose Your Professional Theme:</strong></label>
+                        <div class="theme-selector premium-selector">
                             <input type="radio" id="blueTheme" name="cardTheme" value="blue" checked>
-                            <label for="blueTheme" class="theme-option blue-theme">Ocean Blue</label>
+                            <label for="blueTheme" class="theme-option blue-theme">
+                                <span class="theme-color"></span>
+                                <span class="theme-name">Ocean Blue</span>
+                                <span class="theme-desc">Professional & Trustworthy</span>
+                            </label>
                             
                             <input type="radio" id="greenTheme" name="cardTheme" value="green">
-                            <label for="greenTheme" class="theme-option green-theme">Nature Green</label>
+                            <label for="greenTheme" class="theme-option green-theme">
+                                <span class="theme-color"></span>
+                                <span class="theme-name">Nature Green</span>
+                                <span class="theme-desc">Fresh & Eco-Friendly</span>
+                            </label>
                             
                             <input type="radio" id="purpleTheme" name="cardTheme" value="purple">
-                            <label for="purpleTheme" class="theme-option purple-theme">Royal Purple</label>
+                            <label for="purpleTheme" class="theme-option purple-theme">
+                                <span class="theme-color"></span>
+                                <span class="theme-name">Royal Purple</span>
+                                <span class="theme-desc">Creative & Luxurious</span>
+                            </label>
                             
                             <input type="radio" id="gradientTheme" name="cardTheme" value="gradient">
-                            <label for="gradientTheme" class="theme-option gradient-theme">Sunset Gradient</label>
+                            <label for="gradientTheme" class="theme-option gradient-theme">
+                                <span class="theme-color"></span>
+                                <span class="theme-name">Sunset Gradient</span>
+                                <span class="theme-desc">Modern & Dynamic</span>
+                            </label>
                         </div>
                     </div>
                 </div>
