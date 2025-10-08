@@ -2011,7 +2011,7 @@ input:focus, select:focus, textarea:focus {
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'italic');
                 const thankYouText = currentTheme === 'witchcraft' ? 
-                    'Thank you for choosing WITCHCRAFT Electronics!' : 
+                    'Thank you for choosing WITCHCRAFT!' : 
                     `Thank you for choosing ${theme.name}!`;
                 doc.text(thankYouText, 105, footerY, { align: 'center' });
                 doc.text(`For support: ${theme.contact.split('|')[0].trim()}`, 105, footerY + 10, { align: 'center' });
@@ -2179,7 +2179,7 @@ input:focus, select:focus, textarea:focus {
                 <p style="font-size: 1.2em;"><strong>Grand Total: Rs${data.grandTotal.toFixed(2)}</strong></p>
                 <hr>
                 <p style="text-align: center; color: #666; font-style: italic;">
-                    ${currentTheme === 'witchcraft' ? 'Thank you for choosing WITCHCRAFT Electronics!' : 'Thank you for choosing ' + theme.name + '!'}
+                    ${currentTheme === 'witchcraft' ? 'Thank you for choosing WITCHCRAFT!' : 'Thank you for choosing ' + theme.name + '!'}
                 </p>
             `;
             
